@@ -36,7 +36,13 @@ logger.LogToFile('This is a text file log!', true /*with timestamp*/, false /*wi
 console.log(logger.GetTimestamp()) //and this is just a timestamp [hh:mm:ss]
 ```
 > <span style="color: yellow">JavaScript</span> example
+```js
+const help = require('discord-bot-helpers')
+const logger = new help.Logger('./log.txt')
 
+logger.Log('Hello world!')
+logger.LogToFile('Hello underworld!')
+```
 ## Command handler | ***WIP***
 *This class allows you to easily process chat or console messages*
 
