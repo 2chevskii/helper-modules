@@ -1,0 +1,27 @@
+{
+  "name": "discord-bot-helpers",
+  "version": "0.1.0",
+  "description": "Compilation of functions to help writing discord bots",
+  "main": "lib/index.js",
+  "types": "lib/typings",
+  "scripts": {
+    "build": "tsc -p ."
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "discord.js",
+    "command",
+    "log",
+    "node"
+  ],
+  "author": "2CHEVSKII",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^12.7.3",
+    "typescript": "^3.6.2"
+  },
+  "dependencies": {
+    "discord.js": "^11.5.1"
+  }
+}
