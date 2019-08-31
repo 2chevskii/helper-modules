@@ -1,12 +1,15 @@
-## Discord bot helpers
+[npmjs]: https://www.npmjs.com/package/discord-bot-helpers
+[github]: https://github.com/2chevskii/discord-bot-helpers
+
+## Discord bot helpers [![npmjs](https://img.shields.io/npm/v/discord-bot-helpers)][npmjs] [![github](https://img.shields.io/github/license/2chevskii/discord-bot-helpers)][github]
 **Compilation of functions to help writing discord bots**
 <br>*Package could be used with TypeScript as well as with pure JavaScript*
 <hr>
 
-- [Discord bot helpers](#discord-bot-helpers)
 - [Logger](#logger)
 - [Command handler | ***WIP***](#command-handler--wip)
 - [Roadmap](#roadmap)
+- [Pages](#pages)
 
 <hr>
 
@@ -44,3 +47,7 @@ console.log(logger.GetTimestamp()) //and this is just a timestamp [hh:mm:ss]
 - [ ] Basic command handling tests
 - [ ] Advanced command handling
 - [ ] Command handler docs
+
+## Pages
+* [Github]
+* [NPMJS]
