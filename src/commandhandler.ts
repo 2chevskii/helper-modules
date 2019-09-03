@@ -1,6 +1,74 @@
 import { Message } from 'discord.js'
+import * as fs from 'fs'
+import {join} from 'path'
 
-export class CommandHandler {
+const commandsfile = './commands.json'
+
+interface ServerData{
+    prefix:string;
+    disabledCommands: Array<string>
+}
+
+class CommandHandler {
+    serversettings: Array<ServerData>;
+    constructor(defaultprefix:string = '/'){
+        this.serversettings = new Array<ServerData>();
+        this.loadServerSettings();
+    }
+
+    loadServerSettings(){
+        if (!fs.existsSync(commandsfile))  {
+            fs.writeFileSync(commandsfile, JSON.stringify(this.serversettings, null, '\t'))
+        }
+
+        try {
+            this.serversettings = JSON.parse(fs.readFileSync(commandsfile, {
+                encoding: 'utf-8',
+                flag: 'r'
+        }))
+        } catch {
+            fs.unlinkSync(commandsfile);
+            this.loadServerSettings();
+        }
+    }
+
+    changeServerPrefix(id: string, prefix: string) {
+
+    }
+
+    getServerPrefix(id: string) {
+
+    }
+
+    registerCommand(type:CommandType, cmd:string, callback: (message:Message, args: string[]) => void) {
+        
+    }
+
+    unregisterCommand(cmd:string){
+
+    }
+
+    // toggleCommandOnServer(id:string, cmd:string){
+
+    // }
+    
+    handleDiscordMessage(msg:Message){
+
+    }
+
+    handleConsoleMessage(msg:string){
+
+    }
+
+}
+
+enum CommandType { PM, server, shared, console }
+
+class Command {
+
+}
+
+export class chndl {
     private prefix: string;
     private commands: Array<Command>;
     private consoleCommands: Array<ConsoleCommand>;
@@ -133,18 +201,18 @@ export class CommandHandler {
     }
 }
 
-class Command {
+class cCommand {
     callback: (msg: Message, args?: string[]) => void;
     constructor(callback: (msg: Message, args?: string[]) => void) {
         this.callback = callback
     }
 }
 
-class ConsoleCommand {
+class cConsoleCommand {
     callback: (args?: string[]) => void;
     constructor(callback: (args?: string[]) => void) {
         this.callback = callback
     }
 }
 
-export default { CommandHandler }
+export default { chndl }
