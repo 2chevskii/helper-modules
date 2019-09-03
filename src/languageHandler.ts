@@ -68,7 +68,7 @@ export class LanguageHandler {
                         }))
                     } catch {
                         fs.unlinkSync(path.join(localesfolder, file))
-                        console.log('Deleted ' + file + 'localization file as it does not contain valid json')
+                        console.log('Deleted ' + file + ' localization file as it does not contain valid json')
                     }
                 }
             }
