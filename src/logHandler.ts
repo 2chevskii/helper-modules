@@ -32,7 +32,7 @@ export class LogHandler {
     }
 
     writeLog(data: any, timestamp: boolean = true) {
-        console.log(timestamp ? this.formatLog(data.toString()) : data.toString());
+        process.stdout.write(`${timestamp ? this.formatLog(data.toString()) : data.toString()}\n`, 'utf-8');
     }
 
     writeLogFile(data: any, timestamp: boolean = true, toConsole: boolean = true) {
