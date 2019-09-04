@@ -35,9 +35,9 @@ export class CommandException {
     calledType: CommandType
     /**
      * Initializes new CommandException object
-     * @param notExist 'notExist' setter
-     * @param nativeType 'nativeType' setter
-     * @param calledType 'calledType' setter
+     * @param {boolean} notExist 'notExist' setter
+     * @param {CommandType | null} nativeType 'nativeType' setter
+     * @param {CommandType} calledType 'calledType' setter
      */
     constructor(notExist: boolean, nativeType: CommandType | null, calledType: CommandType) {
         this.notExist = notExist
@@ -67,7 +67,7 @@ class ConsoleCommand implements ICommand {
     callback: ((args: string[]) => void) | (() => void)
     /**
      * Initializes new object of console command
-     * @param cmd Command name
+     * @param {string} cmd Command name
      * @param callback Command callback
      */
     constructor(cmd: string, callback: ((args: string[]) => void) | (() => void)) {
@@ -85,8 +85,8 @@ abstract class DiscordCommand implements ICommand {
     callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)
     /**
      * Initializes new object of discord command. Cannot be called directly
-     * @param cmd Command name
-     * @param type Command type. Set automatically by derived types' constructors
+     * @param {string} cmd Command name
+     * @param {CommandType} type Command type. Set automatically by derived types' constructors
      * @param callback Command callback
      */
     constructor(cmd: string, type: CommandType.server | CommandType.PM | CommandType.shared, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
@@ -138,7 +138,7 @@ export class CommandHandler {
     private commands: Array<ICommand>
     /**
      * Initializes new instance of CommandHandler object. `defaultPrefix` can be omitted
-     * @param defaultprefix Sets default value for prefix on servers. If omitted, it will be `/`
+     * @param {string | undefined} defaultprefix Sets default value for prefix on servers. If omitted, it will be `/`
      */
     constructor(defaultprefix: string = '/') {
         this.defaultprefix = defaultprefix;
@@ -148,7 +148,7 @@ export class CommandHandler {
     }
 
     /** Getter for default prefix, as it is not intended to be modified during runtime
-     * @returns `defaultprefix: string`
+     * @returns {string} Default prefix
      */
     get defaultPrefix() {
         return this.defaultprefix
@@ -178,13 +178,13 @@ export class CommandHandler {
 
     /**
      * Register new command. Needs to be fired *every* time you load your app, since commands are not saved anywhere
-     * @param cmd Name of the command. *Case-independent*. Cannot contain special symbols such as:
+     * @param {string} cmd Name of the command. *Case-independent*. Cannot contain special symbols such as:
      * - `space`
      * - `forwardslash`
      * - `backslash`
      * - `quotes` (single or double)
-     * @param type Type of the command. `CommandType.server` will probably be the choice in most situations
-     * @param callback Command callback, depends on the type of command. Can contain equal or less amount of arguments: 
+     * @param {CommandType} type Type of the command. `CommandType.server` will probably be the choice in most situations
+     * @param {(...args) => void} callback Command callback, depends on the type of command. Can contain equal or less amount of arguments: 
      * - For console commands -> `(string[]) => void`
      * - For discord commands -> `(Discord.Message, string[]) => void`
      * @returns `true` if the command was registered successfully, `false` if the command contains blacklisted symbols or already exists
@@ -222,8 +222,8 @@ export class CommandHandler {
 
     /**
      * Deletes command
-     * @param cmd Name of the command
-     * @returns `true` if the command used to exist and was successfully deleted, `false` if the command does not exist
+     * @param {string} cmd Name of the command
+     * @returns {boolean} `true` if the command used to exist and was successfully deleted, `false` if the command does not exist
      */
     unregisterCommand(cmd: string) {
         cmd = cmd.toLowerCase();
@@ -247,8 +247,8 @@ export class CommandHandler {
 
     /**
      * Add this to your `Discord.Client.on('message')` event handler
-     * @param msg Message which was sent by user
-     * @returns `true` if the command was successfully executed, `false` if the command was not executed (does not exist, wrong channel type, etc.)
+     * @param {Message} msg Message which was sent by user
+     * @returns {boolean} `true` if the command was successfully executed, `false` if the command was not executed (does not exist, wrong channel type, etc.)
      */
     handleDiscordMessage(msg: Message) {
         let cmdtype = msg.guild != undefined ? CommandType.server : CommandType.PM
@@ -268,8 +268,8 @@ export class CommandHandler {
 
     /**
      * Add this to your 'console' event handler.
-     * @param message Message which was received by console prompt
-     * @returns `true` if the command was successfully executed, `false` if the command does not exist
+     * @param {string} message Message which was received by console prompt
+     * @returns {boolean} `true` if the command was successfully executed, `false` if the command does not exist
      */
     handleConsoleMessage(message: string) {
         var cmd = this.parseConsoleCommand(message);
@@ -284,6 +284,7 @@ export class CommandHandler {
     /**
      * Attempts parsing of the command name from the message
      * @param msg Message object
+     * @returns {string} Parsed command
      */
     private parsePMCommand(msg: Message) {
         return msg.content.split(' ')[0].toLowerCase().trim()
@@ -292,6 +293,7 @@ export class CommandHandler {
     /**
      * Attempts parsing of the command name from the message
      * @param msg Message object
+     * @returns {string} Parsed command
      */
     private parseDiscordCommand(msg: Message) { //later this will include checks for disabled commands on certain server
         var prefix = this.prefixOnServer(msg.guild.id)
@@ -300,7 +302,8 @@ export class CommandHandler {
 
     /**
      * Attempts parsing of the command name from the message
-     * @param msg Message object
+     * @param {string} msg Message object
+     * @returns {string} Parsed command
      */
     private parseConsoleCommand(msg: string) {
         return msg.split(' ')[0].toLowerCase().trim();
@@ -308,7 +311,8 @@ export class CommandHandler {
 
     /**
      * Returns an array of parsed arguments. *Cannot be null, but can be 0 length*
-     * @param msg Message object
+     * @param {string} msg Message object
+     * @returns {string[]} Array of parsed arguments
      */
     private parseCommandArguments(msg: string) {
         var args = new Array<string>(0);
@@ -359,8 +363,9 @@ export class CommandHandler {
 
     /**
      * Checks if the command exists under the given conditions
-     * @param cmd Command name
-     * @param type Command type
+     * @param {string} cmd Command name
+     * @param {CommandType} type Command type
+     * @returns {boolean | CommandException} Success or generated exception
      */
     private existsCommand(cmd: string, type: CommandType) {
         var c = (this.commands[cmd] as ICommand);
@@ -377,9 +382,9 @@ export class CommandHandler {
 
     /**
      * Returns state of the `alertonwrongcommand` property for given server id, or sets it
-     * @param id Serverid
-     * @param set Sets new state for that property, can be omitted to get current value
-     * @returns `boolean` value of `IServerData.alertonwrongcommand` if `set` argument is omitted, otherwise sets this property
+     * @param {string} id Serverid
+     * @param {boolean} set Sets new state for that property, can be omitted to get current value
+     * @returns {boolean | undefined} Value of `IServerData.alertonwrongcommand` if `set` argument is omitted, otherwise sets this property
      */
     alertOnServer(id: string, set?: boolean) {
         if (set == undefined) {
@@ -392,9 +397,9 @@ export class CommandHandler {
 
     /**
      * Returns current prefix for given serverid, or sets it. If the server is not recorded in data yet, it also creates default profile for the server
-     * @param id Serverid
-     * @param prefix Sets new prefix for specified server, can be omitted to get current prefix
-     * @returns `prefix: string`
+     * @param {string} id Serverid
+     * @param {string | undefined} prefix Sets new prefix for specified server, can be omitted to get current prefix
+     * @returns {string} Prefix
      */
     prefixOnServer(id: string, prefix?: string) {
         if (prefix != undefined) {
@@ -413,6 +418,8 @@ export class CommandHandler {
     }
 
     // Features on-the-way
+
+    //isCommandAttempt(msg: Message)
 
     // toggleCommandOnServer(id:string, cmd:string){
     //     if (this.isCommandDisabledOnServer(id,cmd)) {
