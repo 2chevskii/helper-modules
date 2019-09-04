@@ -1,24 +1,86 @@
 import { Message, VoiceBroadcast } from 'discord.js'
 import * as fs from 'fs'
-import * as timers from 'timers'
 
 const settingsfile = './commands.json'
 
-interface ServerData {
+//#region Types
+
+enum CommandType { PM, server, shared, console }
+
+interface IServerData {
     prefix: string;
     disabledCommands: Array<string> //inactive
     alertonwrongcommand: boolean
 }
 
-class CommandHandler {
-    private serversettings: Array<ServerData>;
+class CommandException {
+    notExist: boolean
+    nativeType: CommandType | null
+    calledType: CommandType
+    constructor(ne, nt, ct) {
+        this.notExist = ne
+        this.nativeType = nt
+        this.calledType = ct
+    }
+}
+
+interface ICommand {
+    name: string
+    type: CommandType
+    callback: (...params) => void
+}
+
+class ConsoleCommand implements ICommand {
+    name: string
+    type = CommandType.console
+    callback: ((args: string[]) => void) | (() => void)
+    constructor(cmd: string, callback: ((args: string[]) => void) | (() => void)) {
+        this.name = cmd;
+        this.callback = callback
+    }
+}
+
+abstract class DiscordCommand implements ICommand {
+    name: string
+    type: CommandType.server | CommandType.PM | CommandType.shared
+    callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)
+
+    constructor(cmd: string, type: CommandType.server | CommandType.PM | CommandType.shared, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
+        this.name = cmd;
+        this.type = type;
+        this.callback = callback;
+    }
+}
+
+class SharedCommand extends DiscordCommand implements ICommand {
+    constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
+        super(cmd, CommandType.shared, callback);
+    }
+}
+
+class PMCommand extends DiscordCommand implements ICommand {
+    constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
+        super(cmd, CommandType.PM, callback);
+    }
+}
+
+class ServerCommand extends DiscordCommand implements ICommand {
+    constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
+        super(cmd, CommandType.server, callback);
+    }
+}
+
+//#endregion
+
+export class CommandHandler {
+    private serversettings: Array<IServerData>;
     private defaultprefix: string;
-    private commands: Array<Command>
+    private commands: Array<ICommand>
     constructor(defaultprefix: string = '/') {
         this.defaultprefix = defaultprefix;
-        this.serversettings = new Array<ServerData>();
+        this.serversettings = new Array<IServerData>();
         this.loadServerSettings();
-        this.commands = new Array<Command>();
+        this.commands = new Array<ICommand>();
     }
 
     get defaultPrefix() {
@@ -44,8 +106,6 @@ class CommandHandler {
     saveServerSettings() {
         fs.writeFileSync(settingsfile, JSON.stringify(this.serversettings, null, '\t'))
     }
-
-
 
     registerCommand(cmd: string, type: CommandType, callback: (...args) => void) {
         cmd = cmd.toLowerCase();
@@ -87,31 +147,34 @@ class CommandHandler {
     }
 
     callConsoleCallback(name: string, args: string[]) {
-        let callback = (this.commands[name] as Command).callback;
+        let callback = (this.commands[name] as ICommand).callback;
         callback.call(this, args);
     }
 
     callDiscordCallback(name: string, message: Message, args: string[]) {
-        let callback = (this.commands[name] as Command).callback;
+        let callback = (this.commands[name] as ICommand).callback;
         callback.call(this, message, args);
     }
 
-
-
     handleDiscordMessage(msg: Message) {
         var cmd = this.parseDiscordCommand(msg);
-        if (!this.existsCommand(cmd, CommandType.)) { //rethink life (existsCommand method)
-            
+        let cmdtype= msg.guild != undefined ? CommandType.server : CommandType.PM
+        let ret = this.existsCommand(cmd, cmdtype);
+        if (ret == true) {
+            var args = this.parseCommandArguments(msg.content);
+            this.callDiscordCallback(cmd, msg, args);
         }
+        return ret;
     }
 
     handleConsoleMessage(message: string) {
         var cmd = this.parseConsoleCommand(message);
-        if (!this.existsCommand(cmd, CommandType.console)) {
-            return false;
+        let ret = this.existsCommand(cmd, CommandType.console)
+        if (ret == true) {
+            var args = this.parseCommandArguments(message);
+            this.callConsoleCallback(cmd, args);
         }
-        var args = this.parseCommandArguments(message);
-        this.callConsoleCallback(cmd, args);
+        return ret;
     }
 
     parseDiscordCommand(msg: Message) { //later this will include checks for disabled commands on certain server
@@ -171,159 +234,52 @@ class CommandHandler {
     }
 
     existsCommand(cmd: string, type: CommandType) {
-        var c = (this.commands[cmd] as Command);
-        return c != undefined && c != null && (c.type == type || (c.type == CommandType.shared && (type == CommandType.server || type == CommandType.PM)))
+        var c = (this.commands[cmd] as ICommand);
+        if (c == undefined || c == null) {
+            return new CommandException(true, null, type)
+        }
+        if (type == c.type || (c.type == CommandType.shared && type != CommandType.console)) {
+            return true;
+        }
+        else {
+            return new CommandException(false, c.type, type);
+        }
     }
 
     alertOnServer(id: string, set?: boolean) {
         if (set == undefined) {
-            return (this.serversettings[id] as ServerData).alertonwrongcommand
+            return (this.serversettings[id] as IServerData).alertonwrongcommand
         }
 
-        (this.serversettings[id] as ServerData).alertonwrongcommand = set;
+        (this.serversettings[id] as IServerData).alertonwrongcommand = set;
         this.saveServerSettings();
     }
 
     prefixOnServer(id: string, prefix?: string) {
         if (prefix != undefined) {
-            (this.serversettings[id] as ServerData).prefix = prefix;
+            (this.serversettings[id] as IServerData).prefix = prefix;
             this.saveServerSettings();
             return prefix;
         }
         else if (this.serversettings[id] == undefined) {
-            (this.serversettings[id] as ServerData).prefix = this.defaultprefix;
+            (this.serversettings[id] as IServerData).prefix = this.defaultprefix;
             this.saveServerSettings();
             return this.defaultprefix
         }
         else {
-            return (this.serversettings[id] as ServerData).prefix;
+            return (this.serversettings[id] as IServerData).prefix;
         }
     }
 
     // toggleCommandOnServer(id:string, cmd:string){
     //     if (this.isCommandDisabledOnServer(id,cmd)) {
 
-    //         (this.serversettings[id] as ServerData).disabledCommands[(this.serversettings[id] as ServerData).disabledCommands.findIndex(c => c == cmd)] = ''
+    //         (this.serversettings[id] as IServerData).disabledCommands[(this.serversettings[id] as IServerData).disabledCommands.findIndex(c => c == cmd)] = ''
     //     }
     // }
 
     // isCommandDisabledOnServer(id:string, cmd:string){
-    //     return (this.serversettings[id] as ServerData).disabledCommands.findIndex(c => c == cmd) != -1;
+    //     return (this.serversettings[id] as IServerData).disabledCommands.findIndex(c => c == cmd) != -1;
     // }
 
 }
-
-//#region Types
-
-enum CommandType { PM, server, shared, console }
-
-interface Command {
-    name: string
-    type: CommandType
-    callback: (...params) => void
-}
-
-class ConsoleCommand implements Command {
-    name: string
-    type = CommandType.console
-    callback: ((args: string[]) => void) | (() => void)
-    constructor(cmd: string, callback: ((args: string[]) => void) | (() => void)) {
-        this.name = cmd;
-        this.callback = callback
-    }
-}
-
-abstract class DiscordCommand implements Command {
-    name: string
-    type: CommandType.server | CommandType.PM | CommandType.shared
-    callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)
-
-    constructor(cmd: string, type: CommandType.server | CommandType.PM | CommandType.shared, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
-        this.name = cmd;
-        this.type = type;
-        this.callback = callback;
-    }
-}
-
-class SharedCommand extends DiscordCommand implements Command {
-    constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
-        super(cmd, CommandType.shared, callback);
-    }
-}
-
-class PMCommand extends DiscordCommand implements Command {
-    constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
-        super(cmd, CommandType.PM, callback);
-    }
-}
-
-class ServerCommand extends DiscordCommand implements Command {
-    constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
-        super(cmd, CommandType.server, callback);
-    }
-}
-
-//#endregion
-
-export class chndl {
-
-
-    private parseArguments(str: string) {
-        let args = new Array<string>(0);
-        let index = str.indexOf(' ');
-        if (index == -1) {
-            return args;
-        }
-        str = str.substr(index).trim();
-        let flag = false;
-        let current = '';
-        for (let i = 0; i < str.length; i++) {
-            let char = str[i];
-            if (char == '"') {
-                if (!flag) {
-                    flag = true;
-                }
-                else {
-                    let t = current.trim();
-                    if (t != null && t.length > 0) {
-                        args[args.length] = t;
-                    }
-                    flag = false;
-                    current = ''
-                }
-            }
-            else if (char.match(/\s+/g) && !flag) {
-                let t = current.trim();
-                if (t != null && t.length > 0) {
-                    args[args.length] = t;
-                }
-                current = '';
-            }
-            else {
-                current += char;
-            }
-        }
-        let t = current.trim();
-        if (t != null && t.length > 0) {
-            args[args.length] = t;
-        }
-        current = '';
-        return args;
-    }
-}
-
-class cCommand {
-    callback: (msg: Message, args?: string[]) => void;
-    constructor(callback: (msg: Message, args?: string[]) => void) {
-        this.callback = callback
-    }
-}
-
-class cConsoleCommand {
-    callback: (args?: string[]) => void;
-    constructor(callback: (args?: string[]) => void) {
-        this.callback = callback
-    }
-}
-
-export default { chndl }

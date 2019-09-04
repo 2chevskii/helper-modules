@@ -6,13 +6,13 @@ const localesfolder = './locales'
 const serversettingspath = path.join(localesfolder, 'serversettings.json')
 const defaultlocalefile = path.join(localesfolder, `lang_${defaultlocale}.json`)
 
-interface LanguageData {
+interface ILanguageData {
     languages: Array<{}>
     serversettings: Array<string>
 }
 
 export class LanguageHandler {
-    private data: LanguageData
+    private data: ILanguageData
     constructor(defaultMessages: {}) {
         this.data = {
             languages: new Array<{}>(),
