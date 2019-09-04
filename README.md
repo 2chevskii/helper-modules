@@ -6,6 +6,8 @@
 <br>*Package could be used with TypeScript as well as with pure JavaScript*
 <hr>
 
+
+# DOCS ARE BEING REWRITTEN, JSDOC COMMENTS CONTAIN ACTUAL INFORMATION
 - [Logger](#logger)
 - [Command handler | ***WIP***](#command-handler--wip)
 - [Roadmap](#roadmap)
