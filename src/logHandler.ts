@@ -28,11 +28,11 @@ export class LogHandler {
         for (let index = 0; index < Math.min(count, log.length); index++) {
             array.push(log[index])
         }
-        return array;
+        return array.reverse();
     }
 
     writeLog(data: any, timestamp: boolean = true) {
-        process.stdout.write(timestamp ? this.formatLog(data.toString()) : data.toString(), 'utf-8');
+        process.stdout.write(`${timestamp ? this.formatLog(data.toString()) : data.toString()}\n`, 'utf-8');
     }
 
     writeLogFile(data: any, timestamp: boolean = true, toConsole: boolean = true) {
