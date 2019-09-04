@@ -6,7 +6,20 @@
 
 ## Contents
 
-[Installation](#installation)
+- [Installation](#installation)
+- [Features](#features)
+- [Logging](#logging)
+  - [Initialization](#initialization)
+  - [Logging into console](#logging-into-console)
+  - [Writing log into file](#writing-log-into-file)
+  - [Reading last log entries](#reading-last-log-entries)
+- [Localization](#localization)
+  - [Initialization](#initialization-1)
+  - [(De)Initializing additional languages](#deinitializing-additional-languages)
+  - [Getting and setting server localization preference](#getting-and-setting-server-localization-preference)
+  - [Getting localized messages](#getting-localized-messages)
+- [Roadmap](#roadmap)
+- [Pages](#pages)
 
 ## Installation
 To install the package simply run:<br>
@@ -21,10 +34,12 @@ If you are installing from the repo, you'd probably need to install dependencies
 
 > Note that provided library does not use `async` features yet, it will be improved later. Try to avoid logging every single message, if your bot works in 1000+ guilds, that can downgrade the performance for a significant amount
 
+> Also don't forget that this library is highly WIP, things might change throughout the time
+
 ## Logging
 `LogHandler` class is intended to be used as logger.
 
-### Initializing
+### Initialization
 At first, create a new instance of it:
 <br><span style="color:#009988">TypeScript</span> example
 ```ts
@@ -61,6 +76,63 @@ This library also provides method to read last log entries using `LogHandler.sho
 ```js
 logger.showLog() // returns an array with last 10 (or less, if logfile is not long enough) log entries
 logger.showLog(30) // returns an array with last 30 (or less, if logfile is not long enough) log entries
+```
+
+## Localization
+`LanguageHandler` class might help you create multilanguage bots much easier
+### Initialization
+You'd need to create new instance of the class:
+```ts
+import * as helpers from 'discord-bot-helpers'
+
+const lang = new helpers.LanguageHandler({
+    "Key 1": "Phrase 1",
+    "Key 2": "Message 2 is here"
+}) // Creates default localization file in './locales/lang_en.json'
+```
+
+<br><span style="color:#ffff00">JavaScript</span> example
+```js
+const helpers = require('discord-bot-helpers')
+
+const lang = new helpers.LanguageHandler({
+    "Key 1": "Phrase 1",
+    "Key 2": "Message 2 is here"
+}) // Creates default localization file in './locales/lang_en.json'
+```
+
+### (De)Initializing additional languages
+`LanguageHandler.registerLanguage(locale: string, messages: {})` provides method for instantiating new localization
+<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
+```js
+lang.registerLanguage('ru', {
+    "Key 1": "Это локализованное сообщение 1 на русском языке",
+    "Key 2": "Это локализованное сообщение 2 на русском языке"
+}) // Creates file './locales/lang_ru.json' with russian localization
+```
+`LanguageHandler.unregisterLanguage(locale: string)` could help you if you want to delete language file during runtime of the application
+<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
+```js
+lang.unregisterLanguage('ru') // Deletes file './locales/lang_ru.json' with russian localization and destroys russian localization in memory
+```
+
+### Getting and setting server localization preference
+You can always get server language using `LanguageHandler.getServerLanguage(id: string)` method:
+<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
+```js
+lang.getServerLanguage('12345') // Returns localization literal, for example - 'en'
+```
+As well as you can change this language into something different using `LanguageHandler.setServerLanguage(id: string, locale: string)` method:
+<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
+```js
+lang.setServerLanguage('12345', 'ru') // Sets russian localization preference for server with id '12345'
+```
+
+### Getting localized messages
+API provides automatically localized messages (considering localization file exists) with `LanguageHandler.getMessage(id: string, key: string)` method:
+<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
+```js
+lang.getMessage('12345', 'Key 1') // Returns "Это локализованное сообщение 1 на русском языке", since we have set 'ru' localization for server '12345' in previous steps
 ```
 
 ## Roadmap
