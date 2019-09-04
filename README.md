@@ -2,59 +2,74 @@
 [github]: https://github.com/2chevskii/discord-bot-helpers
 
 ## Discord bot helpers [![npmjs](https://img.shields.io/npm/v/discord-bot-helpers)][npmjs] [![github](https://img.shields.io/github/license/2chevskii/discord-bot-helpers)][github]
-**Compilation of functions to help writing discord bots**
-<br>*Package could be used with TypeScript as well as with pure JavaScript*
-<hr>
+> Provides various helpers to make writing discord bots easier
 
+## Contents
 
-# DOCS ARE BEING REWRITTEN, JSDOC COMMENTS CONTAIN ACTUAL INFORMATION
-- [Logger](#logger)
-- [Command handler | ***WIP***](#command-handler--wip)
-- [Roadmap](#roadmap)
-- [Pages](#pages)
+[Installation](#installation)
 
-<hr>
+## Installation
+To install the package simply run:<br>
+`npm i discord-bot-helpers`<br>
+If you are installing from the repo, you'd probably need to install dependencies:<br>
+`npm i`<br>
 
-## Logger
-*This class allows you to add log output to your application with just few lines of code*
-> Features
-* Log to console (`with or without timestamp`)
-* Log to file (`with or without timestamp, additional log to console`)
-* Get separate timestamp
-> Exports
+## Features
+- [x] Easy logging with `LogHandler` class
+- [x] Easy localizing bot on different servers with `LanguageHandler` class
+- [x] Easy processing commands with `CommandHandler` class
+
+> Note that provided library does not use `async` features yet, it will be improved later. Try to avoid logging every single message, if your bot works in 1000+ guilds, that can downgrade the performance for a significant amount
+
+## Logging
+`LogHandler` class is intended to be used as logger.
+
+### Initializing
+At first, create a new instance of it:
+<br><span style="color:#009988">TypeScript</span> example
 ```ts
-Log(data: any, timestamp?: boolean): void;
-LogToFile(data: any, timestamp?: boolean, toConsole?: boolean): void;
-GetTimestamp(withDate?: boolean): string;
-```
-> <span style="color: #2ca88f">TypeScript</span> example
-```ts
-import help from 'discord-bot-helpers'
+import * as helpers from 'discord-bot-helpers'
 
-const logger = new help.Logger('./debug.log')
-
-logger.Log('This is a console log!', false /*without timestamp*/)
-logger.LogToFile('This is a text file log!', true /*with timestamp*/, false /*without console output*/)
-console.log(logger.GetTimestamp()) //and this is just a timestamp [hh:mm:ss]
+const logger = new helpers.LogHandler(); //prefix for log files will be 'bot' in this case ('bot_yyyy_mm_dd.log')
 ```
-> <span style="color: yellow">JavaScript</span> example
+
+<br><span style="color:#ffff00">JavaScript</span> example
 ```js
-const help = require('discord-bot-helpers')
-const logger = new help.Logger('./log.txt')
+const helpers = require('discord-bot-helpers')
 
-logger.Log('Hello world!')
-logger.LogToFile('Hello underworld!')
+const logger = new helpers.LogHandler('app'); //prefix for log files will be 'app' in this case ('app_yyyy_mm_dd.log')
 ```
-## Command handler | ***WIP***
-*This class allows you to easily process chat or console messages*
+### Logging into console
+You can log messages into console using `LogHandler.writeLog(data: any, timestamp?: boolean)` method:
+<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
+```js
+logger.writeLog('Hello world!') // [Date and time] Hello world!
+logger.writeLog('This log message does not have a timestamp, wow!', false) // This log message does not have a timestamp, wow!
+```
+
+### Writing log into file
+You can log messages into logfile using `LogHandler.writeLogFile(data: any, timestamp?: boolean, toConsole?: boolean)` method:
+<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
+```js
+logger.writeLogFile('This log string will be printed inside of the log file and console!')
+logger.writeLogFile("But this won't appear in console", true, false)
+```
+
+### Reading last log entries
+This library also provides method to read last log entries using `LogHandler.showlog(count?: number)` method:
+<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
+```js
+logger.showLog() // returns an array with last 10 (or less, if logfile is not long enough) log entries
+logger.showLog(30) // returns an array with last 30 (or less, if logfile is not long enough) log entries
+```
 
 ## Roadmap
-- [x] Logger
-- [x] Logger tests
-- [x] Basic command handling
-- [ ] Basic command handling tests
-- [ ] Advanced command handling
-- [ ] Command handler docs
+- [x] Logging
+- [x] Language handling
+- [x] Command handling
+- [ ] Migrating to async filesystem operations and async API methods for command handling
+- [ ] Improving language handler with new helper methods, such as getting available localizations, validating localization object, appending new entries to the localization file without overwriting it
+- [ ] Advanced command parsing with single quotation marks and arrays (not sure if needed)
 
 ## Pages
 * [Github]
