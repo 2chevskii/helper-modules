@@ -382,7 +382,7 @@ export class CommandHandler {
     /**
      * Returns state of the `alertonwrongcommand` property for given server id, or sets it
      * @param {string} id Serverid
-     * @param {boolean} set Sets new state for that property, can be omitted to get current value
+     * @param {boolean | undefined} set Sets new state for that property, can be omitted to get current value
      * @returns {boolean | undefined} Value of `IServerData.alertonwrongcommand` if `set` argument is omitted, otherwise sets this property
      */
     alertOnServer(id: string, set?: boolean) {

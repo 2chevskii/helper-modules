@@ -102,7 +102,7 @@ export class LanguageHandler {
 
     /**
      * Register new localization, automatically creates file, which can be modified by hand to change appearance of phrases
-     * @param locale String literal representing the localization (for example: 'en' states for English language)
+     * @param {string} locale String literal representing the localization (for example: 'en' states for English language)
      * @param messages Dictionary which must contain all the phrases for chosen language
      * @returns {boolean} `true` if the language was registered successfully, `false` if the language already exists
      */
@@ -118,7 +118,7 @@ export class LanguageHandler {
 
     /**
      * Delete both object and file for the selected localization
-     * @param locale String literal representing the localization (for example: 'en' states for English language)
+     * @param {string} locale String literal representing the localization (for example: 'en' states for English language)
      * @returns {boolean} `true` if the language was successfully deleted, `false` if the language does not exist
      */
     unregisterLanguage(locale: string) {
@@ -137,8 +137,8 @@ export class LanguageHandler {
 
     /**
      * Set new localization for selected server
-     * @param id Serverid
-     * @param locale String literal representing the localization (for example: 'en' states for English language)
+     * @param {string} id Serverid
+     * @param {string} locale String literal representing the localization (for example: 'en' states for English language)
      */
     setServerLanguage(id: string, locale: string) {
         this.data.serversettings[id] = locale;
@@ -146,7 +146,7 @@ export class LanguageHandler {
 
     /**
      * Get current server localization
-     * @param id Serverid
+     * @param {string} id Serverid
      * @returns {string} String literal representing the localization (for example: 'en' states for English language)
      */
     getServerLanguage(id: string) {
@@ -160,8 +160,8 @@ export class LanguageHandler {
 
     /**
      * Get localized message for server
-     * @param id Serverid
-     * @param key Dictionary phrase key
+     * @param {string} id Serverid
+     * @param {string} key Dictionary phrase key
      * @returns {string | undefined} Phrase, if it exists
      */
     getMessage(id: string, key: string) {
