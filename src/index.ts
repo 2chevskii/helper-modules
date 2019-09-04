@@ -1,3 +1,3 @@
 export { LanguageHandler } from './languageHandler'
-export { CommandHandler } from './commandhandler'
+export { CommandHandler, CommandType, CommandException } from './commandhandler'
 export { LogHandler } from './logHandler'

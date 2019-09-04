@@ -1,11 +1,11 @@
-import { Message, VoiceBroadcast } from 'discord.js'
+import { Message } from 'discord.js'
 import * as fs from 'fs'
 
 const settingsfile = './commands.json'
 
 //#region Types
 
-enum CommandType { PM, server, shared, console }
+export enum CommandType { PM, server, shared, console }
 
 interface IServerData {
     prefix: string;
@@ -13,7 +13,7 @@ interface IServerData {
     alertonwrongcommand: boolean
 }
 
-class CommandException {
+export class CommandException {
     notExist: boolean
     nativeType: CommandType | null
     calledType: CommandType
@@ -87,7 +87,7 @@ export class CommandHandler {
         return this.defaultprefix
     }
 
-    loadServerSettings() {
+    private loadServerSettings() {
         if (!fs.existsSync(settingsfile)) {
             this.saveServerSettings();
         }
@@ -103,7 +103,7 @@ export class CommandHandler {
         }
     }
 
-    saveServerSettings() {
+    private saveServerSettings() {
         fs.writeFileSync(settingsfile, JSON.stringify(this.serversettings, null, '\t'))
     }
 
@@ -146,12 +146,12 @@ export class CommandHandler {
         this.commands[cmd] = undefined;
     }
 
-    callConsoleCallback(name: string, args: string[]) {
+    private callConsoleCallback(name: string, args: string[]) {
         let callback = (this.commands[name] as ICommand).callback;
         callback.call(this, args);
     }
 
-    callDiscordCallback(name: string, message: Message, args: string[]) {
+    private callDiscordCallback(name: string, message: Message, args: string[]) {
         let callback = (this.commands[name] as ICommand).callback;
         callback.call(this, message, args);
     }
@@ -177,16 +177,16 @@ export class CommandHandler {
         return ret;
     }
 
-    parseDiscordCommand(msg: Message) { //later this will include checks for disabled commands on certain server
+    private parseDiscordCommand(msg: Message) { //later this will include checks for disabled commands on certain server
         var prefix = this.prefixOnServer(msg.guild.id)
         return msg.content.split(' ')[0].replace(prefix, '').toLowerCase().trim();
     }
 
-    parseConsoleCommand(msg: string) {
+    private parseConsoleCommand(msg: string) {
         return msg.split(' ')[0].toLowerCase().trim();
     }
 
-    parseCommandArguments(msg: string) {
+    private parseCommandArguments(msg: string) {
         var args = new Array<string>(0);
         let index = msg.indexOf(' ')
         msg = msg.substr(index).trim();
@@ -233,7 +233,7 @@ export class CommandHandler {
         return args;
     }
 
-    existsCommand(cmd: string, type: CommandType) {
+    private existsCommand(cmd: string, type: CommandType) {
         var c = (this.commands[cmd] as ICommand);
         if (c == undefined || c == null) {
             return new CommandException(true, null, type)

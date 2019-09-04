@@ -24,7 +24,11 @@ export class LanguageHandler {
     }
 
     private loadSettings() {
+        if (!fs.existsSync(localesfolder)) {
+            fs.mkdirSync(localesfolder);
+        }
         if (!fs.existsSync(serversettingspath)) {
+            
             fs.writeFileSync(serversettingspath, JSON.stringify(this.data.serversettings, null, '\t'))
         }
 

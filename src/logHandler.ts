@@ -50,7 +50,6 @@ export class LogHandler {
 
     }
 
-
     private formatLog(log: string) {
         return `${this.timestamp} ${log}`
     }
