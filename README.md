@@ -1,11 +1,14 @@
 [npmjs]: https://www.npmjs.com/package/discord-bot-helpers
 [github]: https://github.com/2chevskii/discord-bot-helpers
+[license]: 
 
 ## Discord bot helpers [![npmjs](https://img.shields.io/npm/v/discord-bot-helpers)][npmjs] [![github](https://img.shields.io/github/license/2chevskii/discord-bot-helpers)][github]
 > Provides various helpers to make writing discord bots easier
 
 ## Contents
 
+- [Discord bot helpers](#discord-bot-helpers-npmjsnpmjs-githubgithub)
+- [Contents](#contents)
 - [Installation](#installation)
 - [Features](#features)
 - [Logging](#logging)
@@ -18,7 +21,15 @@
   - [(De)Initializing additional languages](#deinitializing-additional-languages)
   - [Getting and setting server localization preference](#getting-and-setting-server-localization-preference)
   - [Getting localized messages](#getting-localized-messages)
+- [Handling commands](#handling-commands)
+  - [Initialization](#initialization-2)
+  - [(Un)Registering commands](#unregistering-commands)
+  - [Handling inputs](#handling-inputs)
+    - [Handling console input](#handling-console-input)
+    - [Handling discord messages](#handling-discord-messages)
+    - [Recomendations and guidelines](#recomendations-and-guidelines)
 - [Roadmap](#roadmap)
+- [Credits](#credits)
 - [Pages](#pages)
 
 ## Installation
@@ -34,7 +45,9 @@ If you are installing from the repo, you'd probably need to install dependencies
 
 > Note that provided library does not use `async` features yet, it will be improved later. Try to avoid logging every single message, if your bot works in 1000+ guilds, that can downgrade the performance for a significant amount
 
-> Also don't forget that this library is highly WIP, things might change throughout the time
+> Also don't forget that this library is highly WIP, things might change throughout the time<br>
+> This documentation is official, but not necessarily contain all the latest info. JSDoc comments are more precise at this point<br>
+> Latest buildable version of package will always be located in 'develop' branch, 'master' is for stable and fully tested versions
 
 ## Logging
 `LogHandler` class is intended to be used as logger.
@@ -82,6 +95,7 @@ logger.showLog(30) // returns an array with last 30 (or less, if logfile is not 
 `LanguageHandler` class might help you create multilanguage bots much easier
 ### Initialization
 You'd need to create new instance of the class:
+<br><span style="color:#009988">TypeScript</span> example
 ```ts
 import * as helpers from 'discord-bot-helpers'
 
@@ -135,6 +149,134 @@ API provides automatically localized messages (considering localization file exi
 lang.getMessage('12345', 'Key 1') // Returns "Это локализованное сообщение 1 на русском языке", since we have set 'ru' localization for server '12345' in previous steps
 ```
 
+## Handling commands
+`CommandHandler` class is the thing, when you need to have a quick and reliable way to implement user commands
+### Initialization
+As always, you need to create new instance:
+<br><span style="color:#009988">TypeScript</span> example
+```ts
+import * as helpers from 'discord-bot-helpers'
+
+const cmd = new helpers.CommandHandler(); // Default prefix is '/'
+```
+
+<br><span style="color:#ffff00">JavaScript</span> example
+```js
+const helpers = require('discord-bot-helpers')
+
+const cmd = new helpers.CommandHandler('!') // Will set default command prefix to '!'
+```
+
+### (Un)Registering commands
+*Registering command* means that you are assigning callback for specific message entry
+<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
+```js
+const success = cmd.registerCommand('help', helpers.CommandType.console, cmdHelp)
+
+function cmdHelp() {
+    console.log('Help yourself!')
+}
+
+if (success) {
+    console.log('Command was registered successfully!')
+}
+else {
+    console.log('Something went wrong 🤔')
+}
+```
+*Unregistering command* means making this command unavailable and unassigning it's callback
+<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
+```js
+const success = cmd.unregisterCommand('help')
+
+if (success) {
+    console.log('Command was unregistered successfully!')
+}
+else {
+    console.log('Something went wrong 🤔')
+}
+```
+
+### Handling inputs
+#### Handling console input
+Current API provides special type of command for console input handling, following code will give you an example on how to do that
+
+<br><span style="color:#009988">TypeScript</span> example
+```ts
+import * as helpers from 'discord-bot-helpers'
+
+const cmd = new helpers.CommandHandler();
+
+function concmdOutputArgs(args: string[]) {
+    if (args.length > 0) {
+        console.log(`I've received the following arguments:\n${args}`)
+    }
+    else {
+        console.log(`I haven't received any arguments :(`)
+    }
+}
+
+cmd.registerCommand('out', helpers.CommandType.console, concmdOutputArgs);
+
+process.stdin.setEncoding('utf-8')
+
+process.stdin.on('data', data => cmd.handleConsoleMessage(data))
+```
+<span style="color:#ffff00">JavaScript</span> example
+```js
+const helpers = require('discord-bot-helpers')
+
+const cmd = new helpers.CommandHandler('!')
+
+function pong() {
+    console.log(`pong`)
+}
+
+cmd.registerCommand('ping', helpers.CommandType.console, pong);
+
+process.stdin.setEncoding('utf-8')
+
+process.stdin.on('data', data => cmd.handleConsoleMessage(data))
+```
+
+#### Handling discord messages
+You also can rely on the library in terms of controlling discord messages and fire commands if they match
+<br><span style="color:#009988">TypeScript</span> example
+```ts
+import * as helpers from 'discord-bot-helpers'
+import * as discord from 'discord.js'
+
+const cmd = new helpers.CommandHandler();
+const client = new discord.Client();
+
+client.on('message', msg => cmd.handleDiscordMessage(msg))
+client.login('YOUR_COOL_TOKEN_HERE')
+
+cmd.registerCommand('lol', helpers.CommandType.shared, cmdLol)
+cmd.registerCommand('lul', helpers.CommandType.PM, cmdLul)
+cmd.registerCommand('lal', helpers.CommandType.shared, cmdLal)
+
+
+function cmdLol(message: discord.Message) {
+    let server = message.guild // Here you can rely on the API, server won't be null since we assigned type 'server' to command
+    message.channel.send('Some random string')
+}
+
+function cmdLul(message:discord.Message, args: string[]) {
+    let server = message.guild // Will always be null, because this command can only be called in PM
+    message.reply(`You've provided arguments: ${args}`)
+}
+
+function cmdLal(message:discord.Message) {
+    let server = message.guild // Can be null, needs checking, since type is 'shared'
+}
+```
+
+#### Recomendations and guidelines
+* Best practice is to use specific type for discord commands (instead of 'shared')
+* Every type of command can receive `string[]` as arguments array, it cannot be null or undefined, but can have `length == 0`
+* TypeScript is recommended while developing discord bots, since it can be more precise in checking errors than JavaScript. Bug possibility is *way lower*
+
 ## Roadmap
 - [x] Logging
 - [x] Language handling
@@ -142,6 +284,11 @@ lang.getMessage('12345', 'Key 1') // Returns "Это локализованно�
 - [ ] Migrating to async filesystem operations and async API methods for command handling
 - [ ] Improving language handler with new helper methods, such as getting available localizations, validating localization object, appending new entries to the localization file without overwriting it
 - [ ] Advanced command parsing with single quotation marks and arrays (not sure if needed)
+
+## Credits
+* General idea and structure (partially) of language handler was inspired by Oxide/uMod modding platform, `Lang library` from `Oxide.Core.dll` licensed under MIT license
+* Parsing arguments function was originally taken from `Oxide.Core.dll` and adopted for TypeScript
+* All dependencies belong to their developer teams, and keep original licenses
 
 ## Pages
 * [Github]
