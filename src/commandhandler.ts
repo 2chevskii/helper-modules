@@ -125,7 +125,6 @@ class ServerCommand extends DiscordCommand implements ICommand {
 
 //#endregion
 
-
 /**
  * General export class. Create an instance of this if you want to use this module functionality
  */
