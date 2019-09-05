@@ -1,13 +1,13 @@
 [npmjs]: https://www.npmjs.com/package/discord-bot-helpers
 [github]: https://github.com/2chevskii/discord-bot-helpers
-[license]: 
+[license]: https://www.tldrlegal.com/l/mit
 
-## Discord bot helpers [![npmjs](https://img.shields.io/npm/v/discord-bot-helpers)][npmjs] [![github](https://img.shields.io/github/license/2chevskii/discord-bot-helpers)][github]
+## Discord bot helpers [![npmjs](https://img.shields.io/npm/v/discord-bot-helpers)][npmjs] [![license](https://img.shields.io/github/license/2chevskii/discord-bot-helpers)][license]
 > Provides various helpers to make writing discord bots easier
 
 ## Contents
 
-- [Discord bot helpers](#discord-bot-helpers-npmjsnpmjs-githubgithub)
+- [Discord bot helpers](#discord-bot-helpers-npmjsnpmjs-licensegithub)
 - [Contents](#contents)
 - [Installation](#installation)
 - [Features](#features)
@@ -284,9 +284,10 @@ function cmdLal(message:discord.Message) {
 - [ ] Migrating to async filesystem operations and async API methods for command handling
 - [ ] Improving language handler with new helper methods, such as getting available localizations, validating localization object, appending new entries to the localization file without overwriting it
 - [ ] Advanced command parsing with single quotation marks and arrays (not sure if needed)
+- [ ] Auto permission handling 
 
 ## Credits
-* General idea and structure (partially) of language handler was inspired by Oxide/uMod modding platform, `Lang library` from `Oxide.Core.dll` licensed under MIT license
+* General idea and structure (partially) of language handler was inspired by Oxide/uMod modding platform, `Lang library` from `Oxide.Core.dll` licensed under the [MIT license][license]
 * Parsing arguments function was originally taken from `Oxide.Core.dll` and adopted for TypeScript
 * All dependencies belong to their developer teams, and keep original licenses
 
