@@ -386,6 +386,9 @@ export class CommandHandler {
      * @returns {boolean | undefined} Value of `IServerData.alertonwrongcommand` if `set` argument is omitted, otherwise sets this property
      */
     alertOnServer(id: string, set?: boolean) {
+        if (this.serversettings[id] == undefined) {
+            this.serversettings[id] = {} as IServerData
+        }
         if (set == undefined) {
             return (this.serversettings[id] as IServerData).alertonwrongcommand
         }
@@ -401,6 +404,9 @@ export class CommandHandler {
      * @returns {string} Prefix
      */
     prefixOnServer(id: string, prefix?: string) {
+        if (this.serversettings[id] == undefined) {
+            this.serversettings[id] = {} as IServerData
+        }
         if (prefix != undefined) {
             (this.serversettings[id] as IServerData).prefix = prefix;
             this.saveServerSettings();
