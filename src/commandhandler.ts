@@ -251,7 +251,7 @@ export class CommandHandler {
      */
     handleDiscordMessage(msg: Message) {
         let cmdtype = msg.guild != undefined ? CommandType.server : CommandType.PM
-        if (cmdtype == CommandType.server) {
+        if (cmdtype == CommandType.server && this.isCommandType(msg)) {
             var cmd = this.parseDiscordCommand(msg);
         }
         else {
@@ -263,6 +263,11 @@ export class CommandHandler {
             this.callDiscordCallback(cmd, msg, args);
         }
         return ret;
+    }
+
+    isCommandType(msg: Message){
+        let prefix = this.prefixOnServer(msg.guild.id);
+        return msg.content.startsWith(prefix)
     }
 
     /**
