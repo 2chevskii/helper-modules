@@ -1,8 +1,9 @@
 [npmjs]: https://www.npmjs.com/package/discord-bot-helpers
 [github]: https://github.com/2chevskii/discord-bot-helpers
 [license]: https://www.tldrlegal.com/l/mit
+[discord]: https://discord.gg/DBaqZNZ
 
-## Discord bot helpers [![npmjs](https://img.shields.io/npm/v/discord-bot-helpers)][npmjs] [![license](https://img.shields.io/github/license/2chevskii/discord-bot-helpers)][license]
+## Discord bot helpers [![npmjs](https://img.shields.io/npm/v/discord-bot-helpers)][npmjs] [![license](https://img.shields.io/github/license/2chevskii/discord-bot-helpers)][license] [![discord](https://discordapp.com/api/guilds/266961601784053781/embed.png)][discord] ![](https://img.shields.io/github/last-commit/2chevskii/discord-bot-helpers?style=flat)
 > Provides various helpers to make writing discord bots easier
 
 ## Contents
@@ -291,6 +292,7 @@ function cmdLal(message:discord.Message) {
 * Parsing arguments function was originally taken from `Oxide.Core.dll` and adopted for TypeScript
 * All dependencies belong to their developer teams, and keep original licenses
 
-## Pages
+## Links
 * [Github]
 * [NPMJS]
+* [Discord]
