@@ -281,8 +281,9 @@ export class CommandHandler {
         if (ret == true) {
             var args = this.parseCommandArguments(message);
             this.callConsoleCallback(cmd, args);
+            return ret;
         }
-        return ret;
+        else return false;
     }
 
     /**
@@ -314,9 +315,9 @@ export class CommandHandler {
     }
 
     /**
-     * Returns an array of parsed arguments. *Cannot be null, but can be 0 length*
+     * Returns an array of parsed arguments.
      * @param {string} msg Message object
-     * @returns {string[]} Array of parsed arguments
+     * @returns {string[]} Array of parsed arguments. *Cannot be null, but can be 0 length*
      */
     private parseCommandArguments(msg: string) {
         var args = new Array<string>(0);
