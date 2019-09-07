@@ -1,7 +1,8 @@
 import * as fs from 'fs'
 import path from 'path'
 
-// These values are not intended to be modified, do that only if you really know what you are doing
+export namespace Lang{
+    // These values are not intended to be modified, do that only if you really know what you are doing
 /** Default localization literal ('en' - for English) */
 const defaultlocale = 'en'
 /** Folder which must contain all the language files */
@@ -175,4 +176,5 @@ export class LanguageHandler {
     }
 
     //TODO: Make functions to get all available languages, and make getMessage create default language file for given locale if it does not exist
+}
 }

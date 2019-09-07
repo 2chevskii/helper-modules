@@ -1,7 +1,8 @@
 import { Message } from 'discord.js'
 import * as fs from 'fs'
 
-/** Path to the file with saved settings, not intended to be changed, but nothing will probably go wrong if you know, what you are doing */
+export namespace Command{
+    /** Path to the file with saved settings, not intended to be changed, but nothing will probably go wrong if you know, what you are doing */
 const settingsfile = './commands.json'
 
 //#region Types
@@ -443,4 +444,5 @@ export class CommandHandler {
     //     return (this.serversettings[id] as IServerData).disabledCommands.findIndex(c => c == cmd) != -1;
     // }
 
+}
 }
