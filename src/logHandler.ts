@@ -1,24 +1,40 @@
 import * as fs from 'fs'
 import { join } from 'path'
+import { promisify } from 'util';
 
 /** Folder which contains logs. Not intended to be modified, but probably won't do any harm if you change it */
 const logfolder = './logs'
+
+/** These characters are prohibited to use in the filename to avoid problems */
+const reservedCharacters = ["'", '"', '?', ':', '/', '\\', '>', '<', '*', '%', '|', ' ', '.', ',']
 
 /**
  * General export class, instantiate this if you want to use module functionality
  */
 export class LogHandler {
     /** Prefix for log file name */
-    private logfile: string;
+    private logfileprefix: string;
     /**
      * Initializes new LogHandler object
      * @param {string | undefined} logfilename override default log file name prefix (`bot`)
      */
-    constructor(logfilename: string = 'bot') {
-        this.logfile = logfilename;
+    constructor(logfilename?: string) {
+        if (logfilename != undefined) {
+            for (let i = 0; i < logfilename.length; i++) {
+                const char = logfilename[i];
+                if (reservedCharacters.includes(char)) {
+                    logfilename = undefined;
+                    break;
+                }
+            }
+        }
+        if (logfilename == undefined) {
+            logfilename = 'bot'
+        }
+        this.logfileprefix = logfilename;
     }
 
-    /** Check if logifile for current time exists */
+    /** Check if logfile for current time exists */
     private checkLogFile() {
         if (!fs.existsSync(logfolder)) {
             fs.mkdirSync(logfolder);
@@ -101,13 +117,13 @@ export class LogHandler {
         return { year: yr, month: month, day: day, hour: hr, minute: min, second: s, millisecond: ms }
     }
 
-    /** Get current logfile name */
+    /** Get current logfileprefix name */
     private get logfileName() {
         let obj = this.timeObject;
-        return `${this.logfile}_${obj.year}_${obj.month}_${obj.day}.log`
+        return `${this.logfileprefix}_${obj.year}_${obj.month}_${obj.day}.log`
     }
 
-    /** Get current logfile path */
+    /** Get current logfileprefix path */
     private get logFilePath() {
         return join(logfolder, this.logfileName);
     }
