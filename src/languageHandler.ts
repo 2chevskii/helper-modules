@@ -178,3 +178,5 @@ export class LanguageHandler {
     //TODO: Make functions to get all available languages, and make getMessage create default language file for given locale if it does not exist
 }
 }
+
+export default Lang

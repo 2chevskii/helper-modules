@@ -1,6 +1,9 @@
 import * as fs from 'fs'
 import { join } from 'path'
 
+/**
+ * Contains definitions which can be helpful for logging and debugging
+ */
 export namespace Log {
 
     /** Folder which contains logs. Not intended to be modified, but probably won't do any harm if you change it */
@@ -191,4 +194,4 @@ export namespace Log {
     }
 }
 
-export default {Log}
+export default Log
