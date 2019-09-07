@@ -1,6 +1,6 @@
 {
   "name": "discord-bot-helpers",
-  "version": "0.3.2",
+  "version": "0.3.6",
   "description": "Compilation of functions to help writing discord bots",
   "main": "lib/index.js",
   "types": "lib/typings",
@@ -17,7 +17,9 @@
     "discord.js",
     "command",
     "log",
-    "node"
+    "node",
+    "localization",
+    "language"
   ],
   "author": "2CHEVSKII",
   "license": "MIT",
