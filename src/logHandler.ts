@@ -166,7 +166,7 @@ export namespace Log {
             let date = new Date()
             let yr = date.getFullYear()
             let month = date.getMonth()
-            let day = date.getDay()
+            let day = date.getDate()
             let hr = date.getHours()
             let min = date.getMinutes()
             let s = date.getSeconds()
