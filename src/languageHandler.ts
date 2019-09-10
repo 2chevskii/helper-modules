@@ -22,6 +22,8 @@ export namespace Lang {
         serversettings: Array<string>
     }
 
+    
+
     /**
      * General export class, instantiate this if you want to use this module features
      */
