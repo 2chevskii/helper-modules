@@ -101,7 +101,7 @@ export namespace Log {
          * @param {boolean | undefined} timestamp Set to false, if you don't want to add timestamp to the log entry
          * @param {boolean | undefined} toConsole Set to false, if you don't want to output log entry to console
          */
-        writeLogFile(data: any, timestamp: boolean = true, toConsole: boolean = true) {
+        writeLogFile(data: any, timestamp: boolean = true, toConsole: boolean = true):void {
             let str = data.toString()
             if (timestamp) {
                 str = this.formatLog(str)
@@ -115,14 +115,14 @@ export namespace Log {
                 if (!exists) {
                     fs.mkdir(logfolder, (ex) => {
                         if (ex != null) {
-                            console.error(ex);
+                            this.writeLog(ex)
                         }
                         else {
                             fs.appendFile(this.logFilePath, str + '\r\n', {
                                 encoding: 'utf-8'
                             }, (ex) => {
                                 if (ex != null) {
-                                    console.error(ex)
+                                    this.writeLog(ex)
                                 }
                             })
                         }
@@ -133,7 +133,7 @@ export namespace Log {
                         encoding: 'utf-8'
                     }, (ex) => {
                         if (ex != null) {
-                            console.error(ex)
+                            this.writeLog(ex)
                         }
                     })
                 }
