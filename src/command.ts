@@ -3,7 +3,7 @@ import * as fs from 'fs'
 
 export namespace Command {
     /** Path to the file with saved settings, not intended to be changed, but nothing will probably go wrong if you know, what you are doing */
-    const settingsfile = './commands.json'
+    const datafile = './commands.json'
 
     //#region Types
 
@@ -19,7 +19,7 @@ export namespace Command {
         /** Server's current command prefix */
         prefix: string;
         /** Temporarily disabled, as this feature is not implemented yet. Later this will allow to disable certain commands on specific */
-        //disabledCommands: Array<string>
+        disabledCommands: Array<string>
         /** Not shipped with any alert methods (yet), but you can natively check this in your code to fire some function */
         alertonwrongcommand: boolean
     }
@@ -156,24 +156,24 @@ export namespace Command {
 
         /** Create new, or load existing settings file */
         private loadServerSettings() {
-            if (!fs.existsSync(settingsfile)) {
+            if (!fs.existsSync(datafile)) {
                 this.saveServerSettings();
             }
 
             try {
-                this.serversettings = JSON.parse(fs.readFileSync(settingsfile, {
+                this.serversettings = JSON.parse(fs.readFileSync(datafile, {
                     encoding: 'utf-8',
                     flag: 'r'
                 }))
             } catch {
-                fs.unlinkSync(settingsfile);
+                fs.unlinkSync(datafile);
                 this.loadServerSettings();
             }
         }
 
         /** Save current `serversettings` to the file */
         private saveServerSettings() {
-            fs.writeFileSync(settingsfile, JSON.stringify(this.serversettings, null, '\t'))
+            fs.writeFileSync(datafile, JSON.stringify(this.serversettings, null, '\t'))
         }
 
         /**
