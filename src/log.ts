@@ -2,22 +2,22 @@ import * as fs from 'fs'
 import { join } from 'path'
 
 /**
- * Contains definitions which can be helpful for logging and debugging
+ * Contains definitions which can be helpful for logging and debugging.
  */
 export namespace Log {
 
     /**
-     * Folder which contains logs. Not intended to be modified, but probably won't do any harm if you change it
+     * Folder which contains logs. Not intended to be modified, but probably won't do any harm if you change it.
      */
     const logfolder = './logs'
 
     /** 
-     * These characters are prohibited to use in the filename to avoid problems
+     * These characters are prohibited to use in the filename to avoid problems.
      */
     const reservedCharacters = ["'", '"', '?', ':', '/', '\\', '>', '<', '*', '%', '|', ' ', '.', ',']
 
     /** 
-     * Helps organize timestamps
+     * Helps organize timestamps.
      */
     interface TimeStamp {
         year: number;
@@ -30,7 +30,7 @@ export namespace Log {
     }
 
     /** 
-     * General export class, instantiate this if you want to use module functionality
+     * General export class, instantiate this if you want to use module functionality.
      */
     export class LogHandler {
 
@@ -40,8 +40,8 @@ export namespace Log {
         private logfileprefix: string
 
         /**
-         * Initializes new LogHandler object
-         * @param {string | undefined} logfilename override default log file name prefix (`bot`)
+         * Initializes new LogHandler object.
+         * @param {string | undefined} logfilename override default log file name prefix (`bot`).
          */
         constructor(logfilename?: string) {
             // Setting the correct prefix
@@ -62,10 +62,10 @@ export namespace Log {
 
         /**
          * Returns `number` of log entries (`10` by default). 
-         * * *It is safe to pass argument bigger than the existing log*
-         * * *Be aware, that because of writeLogFile function uses async, the most recent log entries could not be available all the time, try to give it some time to process*
-         * @param {number} count Max number of log entries to return
-         * @returns {string[]} Array of log entries
+         * * *It is safe to pass argument bigger than the existing log*.
+         * * *Be aware, that because of writeLogFile function uses async, the most recent log entries could not be available all the time, try to give it some time to process*.
+         * @param {number} count Max number of log entries to return.
+         * @returns {string[]} Array of log entries.
          */
         showLog(count: number = 10): string[] {
             const array = new Array<string>(0);
@@ -86,9 +86,9 @@ export namespace Log {
         }
 
         /**
-         * Print log into Node.js console, optionally with a timestamp
-         * @param {any} data Data, convertible to string
-         * @param {boolean | undefined} timestamp Set to false, if you don't want to add timestamp to the log entry
+         * Print log into Node.js console, optionally with a timestamp.
+         * @param {any} data Data, convertible to string.
+         * @param {boolean | undefined} timestamp Set to false, if you don't want to add timestamp to the log entry.
          */
         writeLog(data: any, timestamp: boolean = true): void {
             var log = `${timestamp ? this.formatLog(data.toString()) : data.toString()}\n`
@@ -96,10 +96,10 @@ export namespace Log {
         }
 
         /**
-         * Write log into current log file, optionally to console
-         * @param {any} data Data, convertible to string
-         * @param {boolean | undefined} timestamp Set to false, if you don't want to add timestamp to the log entry
-         * @param {boolean | undefined} toConsole Set to false, if you don't want to output log entry to console
+         * Write log into current log file, optionally to console.
+         * @param {any} data Data, convertible to string.
+         * @param {boolean | undefined} timestamp Set to false, if you don't want to add timestamp to the log entry.
+         * @param {boolean | undefined} toConsole Set to false, if you don't want to output log entry to console.
          */
         writeLogFile(data: any, timestamp: boolean = true, toConsole: boolean = true):void {
             let str = data.toString()
@@ -141,16 +141,16 @@ export namespace Log {
         }
 
         /** 
-         * Appends timestamp to the message
-         * @returns {string} `[HR:MIN:SEC] log`
+         * Appends timestamp to the message.
+         * @returns {string} `[HR:MIN:SEC] log`.
          */
         private formatLog(log: string): string {
             return `${this.timestamp} ${log}`
         }
 
         /** 
-         * Get current timestamp
-         * @returns {string} Present time in `[HR:MIN:SEC]` format
+         * Get current timestamp.
+         * @returns {string} Present time in `[HR:MIN:SEC]` format.
          */
         private get timestamp(): string {
             var obj = this.timeObject;
@@ -158,7 +158,7 @@ export namespace Log {
         }
 
         /** 
-         * Get object representing current date and time
+         * Get object representing current date and time.
          * @returns {TimeStamp} Object containing current date:
          * * year
          * * month
@@ -182,8 +182,8 @@ export namespace Log {
         }
 
         /**
-         * Get current logfileprefix name
-         * @returns {string} New name for logfile in `prefix_YYYY_MM_DD.log` format
+         * Get current logfileprefix name.
+         * @returns {string} New name for logfile in `prefix_YYYY_MM_DD.log` format.
          */
         private get logfileName(): string {
             let obj = this.timeObject
@@ -191,8 +191,8 @@ export namespace Log {
         }
 
         /** 
-         * Get current logfileprefix path
-         * @returns {string} Generated path to corresponding logfile for present day
+         * Get current logfileprefix path.
+         * @returns {string} Generated path to corresponding logfile for present day.
          */
         private get logFilePath(): string {
             return join(logfolder, this.logfileName)
