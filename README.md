@@ -62,12 +62,6 @@ import * as helpers from 'discord-bot-helpers'
 const logger = new helpers.LogHandler(); //prefix for log files will be 'bot' in this case ('bot_yyyy_mm_dd.log')
 ```
 
-<br><span style="color:#ffff00">JavaScript</span> example
-```js
-const helpers = require('discord-bot-helpers')
-
-const logger = new helpers.LogHandler('app'); //prefix for log files will be 'app' in this case ('app_yyyy_mm_dd.log')
-```
 ### Logging into console
 You can log messages into console using `LogHandler.writeLog(data: any, timestamp?: boolean)` method:
 <br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
@@ -96,58 +90,37 @@ logger.showLog(30) // returns an array with last 30 (or less, if logfile is not 
 `LanguageHandler` class might help you create multilanguage bots much easier
 ### Initialization
 You'd need to create new instance of the class:
-<br><span style="color:#009988">TypeScript</span> example
-```ts
-import * as helpers from 'discord-bot-helpers'
-
-const lang = new helpers.LanguageHandler({
-    "Key 1": "Phrase 1",
-    "Key 2": "Message 2 is here"
-}) // Creates default localization file in './locales/lang_en.json'
-```
-
-<br><span style="color:#ffff00">JavaScript</span> example
+<br><span style="color:#ffff00">JavaScript (ES6)</span> example
 ```js
-const helpers = require('discord-bot-helpers')
+import helpers from 'discord-bot-helpers'
 
-const lang = new helpers.LanguageHandler({
-    "Key 1": "Phrase 1",
-    "Key 2": "Message 2 is here"
-}) // Creates default localization file in './locales/lang_en.json'
+const lang = new helpers.Lang.LanguageHandler()
 ```
 
-### (De)Initializing additional languages
+### Registering new languages
 `LanguageHandler.registerLanguage(locale: string, messages: {})` provides method for instantiating new localization
 <br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
 ```js
-lang.registerLanguage('ru', {
-    "Key 1": "Это локализованное сообщение 1 на русском языке",
-    "Key 2": "Это локализованное сообщение 2 на русском языке"
-}) // Creates file './locales/lang_ru.json' with russian localization
-```
-`LanguageHandler.unregisterLanguage(locale: string)` could help you if you want to delete language file during runtime of the application
-<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
-```js
-lang.unregisterLanguage('ru') // Deletes file './locales/lang_ru.json' with russian localization and destroys russian localization in memory
+lang.registerLanguage('en', {
+    'example 1': "This is an example message",
+    'example 2': 'This is an another example message'
+}) // Creates file './locales/lang_en.json' with given localization
 ```
 
-### Getting and setting server localization preference
-You can always get server language using `LanguageHandler.getServerLanguage(id: string)` method:
+
+### Setting server localization preference
+You can always set server language using `LanguageHandler.setLanguage(id: string, locale: string)` method:
 <br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
 ```js
-lang.getServerLanguage('12345') // Returns localization literal, for example - 'en'
-```
-As well as you can change this language into something different using `LanguageHandler.setServerLanguage(id: string, locale: string)` method:
-<br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
-```js
-lang.setServerLanguage('12345', 'ru') // Sets russian localization preference for server with id '12345'
+lang.setLanguage('12345698172938', 'de') // Sets preference 'de' for id '12345698172938'
 ```
 
 ### Getting localized messages
 API provides automatically localized messages (considering localization file exists) with `LanguageHandler.getMessage(id: string, key: string)` method:
 <br><span style="color:#009988">TypeScript</span> | <span style="color:#ffff00">JavaScript</span> example
 ```js
-lang.getMessage('12345', 'Key 1') // Returns "Это локализованное сообщение 1 на русском языке", since we have set 'ru' localization for server '12345' in previous steps
+lang.getMessage('1231515123', 'example 1') // Will return 'This is an example message'
+lang.getMessage('31231', 'this key does not exist') // Will return 'this key does not exist'
 ```
 
 ## Handling commands
