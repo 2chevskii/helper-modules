@@ -1,183 +1,139 @@
 import * as fs from 'fs'
 import path from 'path'
+import { Log } from './log'
 
 export namespace Lang {
     // These values are not intended to be modified, do that only if you really know what you are doing
-    /** Default localization literal ('en' - for English) */
-    const defaultlocale = 'en'
     /** Folder which must contain all the language files */
     const localesfolder = './locales'
 
-    // Do not modify these for sure, easy way to mess up all of it
-    const serversettingspath = path.join(localesfolder, 'serversettings.json')
-    const defaultlocalefile = path.join(localesfolder, `lang_${defaultlocale}.json`)
+    const logger = new Log.LogHandler('lang-module')
 
-    /**
-     * Represents container for server language preferences storage throughout the app sessions
-     */
-    interface ILanguageData {
-        /** Dictionaries with phrases */
-        languages: Array<{}>
-        /** Server locales */
-        serversettings: Array<string>
-    }
-
-    
-
-    /**
-     * General export class, instantiate this if you want to use this module features
-     */
     export class LanguageHandler {
-        /** Stores server preferences and phrases throughout the sessions */
-        private data: ILanguageData
-        /**
-         * Initializes new LanguageHandler object
-         * @param defaultMessages Dictionary with phrases for default localization (`en`)
-         */
-        constructor(defaultMessages: {}) {
-            this.data = {
-                languages: new Array<{}>(),
-                serversettings: new Array<string>()
-            }
-            this.loadSettings();
-            this.loadDefaultMessages(defaultMessages);
-            this.loadOtherLanguages();
+        private languages: Array<{}>
+        private langdata: Object
+        constructor() {
+            this.languages = new Array<{}>()
+            this.langdata = {}
+            this.loadLanguageFiles()
+            this.loadLangData()
         }
 
-        /** Create new or load existing preferences file */
-        private loadSettings() {
+        private loadLangData(){
+            if (!fs.existsSync('./lang_data.json')) {
+                this.saveLangData();
+            }
+            try {
+                this.langdata = JSON.parse(fs.readFileSync('./lang_data.json', {encoding:'utf-8', flag:'r'}))
+                if(this.langdata == undefined || this.langdata == null){
+                    throw 'Error while reading language data';
+                }
+            } catch (error) {
+                logger.writeLogFile(error)
+                this.langdata = {}
+                this.saveLangData()
+            }
+        }
+
+        private saveLangData(){
+            fs.writeFileSync('./lang_data.json', JSON.stringify(this.langdata, null, '\t'))
+        }
+
+        private loadLanguageFiles() {
             if (!fs.existsSync(localesfolder)) {
-                fs.mkdirSync(localesfolder);
-            }
-            if (!fs.existsSync(serversettingspath)) {
-
-                fs.writeFileSync(serversettingspath, JSON.stringify(this.data.serversettings, null, '\t'))
+                fs.mkdirSync(localesfolder)
             }
 
-            try {
-                this.data.serversettings = JSON.parse(fs.readFileSync(serversettingspath, {
-                    encoding: 'utf-8',
-                    flag: 'r'
-                }))
-            } catch {
-                this.data.serversettings = new Array<string>();
-                fs.unlinkSync(serversettingspath);
-                this.loadSettings();
-            }
-        }
-
-        /** Create new or load existing phrases from file */
-        private loadDefaultMessages(defaultMessages: {}) {
-            if (!fs.existsSync(defaultlocalefile)) {
-                fs.writeFileSync(defaultlocalefile, JSON.stringify(defaultMessages))
-            }
-
-            try {
-                this.data.languages[defaultlocale] = JSON.parse(fs.readFileSync(defaultlocalefile, {
-                    encoding: 'utf-8',
-                    flag: 'r'
-                }))
-            } catch {
-                fs.unlinkSync(defaultlocalefile);
-                this.loadDefaultMessages(defaultMessages);
-            }
-        }
-
-        /** Load other localizations */
-        private loadOtherLanguages() {
-            fs.readdirSync(localesfolder).forEach(file => {
+            for (let file of fs.readdirSync(localesfolder)) {
                 if (file.startsWith('lang_') && file.endsWith('.json')) {
-                    let locale = file.replace('lang_', '').replace('.json', '')
-                    if (locale != defaultlocale) {
-                        try {
-                            this.data.languages[locale] = JSON.parse(fs.readFileSync(path.join(localesfolder, file), {
-                                encoding: 'utf-8',
-                                flag: 'r'
-                            }))
-                        } catch {
-                            fs.unlinkSync(path.join(localesfolder, file))
-                            console.log('Deleted ' + file + ' localization file as it does not contain valid json')
-                        }
+                    try {
+                        let locale = file.replace('lang_', '').replace('.json', '')
+                        let strings = JSON.parse(fs.readFileSync(this.getPath(locale), { encoding: 'utf-8', flag: 'r' }))
+                        this.languages[locale] = strings
+                    } catch (ex) {
+                        logger.writeLogFile(ex)
                     }
                 }
+            }
+        }
+
+        private saveLanguageFiles(){
+            if (!fs.existsSync(localesfolder)) {
+                fs.mkdirSync(localesfolder)
+            }
+
+            Object.entries(this.languages).forEach(value => {
+                fs.writeFile(this.getPath(value[0]), JSON.stringify(value[1], null, '\t'), null, ex => {
+                    if (ex != null) {
+                        logger.writeLogFile(ex)
+                    }
+                })
             });
         }
 
-        /**
-         * Register new localization, automatically creates file, which can be modified by hand to change appearance of phrases
-         * @param {string} locale String literal representing the localization (for example: 'en' states for English language)
-         * @param messages Dictionary which must contain all the phrases for chosen language
-         * @returns {boolean} `true` if the language was registered successfully, `false` if the language already exists
-         */
-        registerLanguage(locale: string, messages: {}): boolean {
-            if (this.data.languages[locale] != undefined) {
+        getLanguage(id:string){
+            if (this.langdata[id] == undefined) {
+
+                this.langdata[id] = Object.keys(this.languages)[0]
+                this.saveLangData()
+            }
+            return this.langdata[id]
+        }
+
+        getAllLanguages(){
+            return Object.keys(this.languages)
+        }
+
+        getAllLanguageMessages(locale:string){
+            return Object.keys(this.languages[locale])
+        }
+
+        registerLanguage(locale:string, messages: {}){
+            if (!this.existsLanguage(locale)) {
+                this.languages[locale] = messages
+            }
+            else{
+                for(let msg of Object.keys(messages)){
+                    if (this.languages[locale][msg] == undefined) {
+                        this.languages[locale][msg] = messages[msg]
+                    }
+                }
+            }
+            this.saveLanguageFiles();
+        }
+
+        setLanguage(id:string, locale:string){
+            this.langdata[id] = locale
+            this.saveLangData()
+        }
+
+        getMessage(id:string, key:string){
+            return this.getMessageInternal(this.getLanguage(id), key)
+        }
+
+        private getMessageInternal(locale:string, key:string){
+            if (!this.existsMessage(locale, key)) {
+                return key;
+            }
+            else{
+                return this.languages[locale][key]
+            }
+        }
+
+        existsMessage(locale:string, key:string){
+            if (!this.existsLanguage(locale)) {
                 return false;
             }
-
-            this.data.languages[locale] = messages
-            fs.writeFileSync(path.join(localesfolder, `lang_${locale}.json`), JSON.stringify(this.data.languages[locale]))
-            return true;
+            return this.languages[locale][key] != undefined
         }
 
-        /**
-         * Delete both object and file for the selected localization
-         * @param {string} locale String literal representing the localization (for example: 'en' states for English language)
-         * @returns {boolean} `true` if the language was successfully deleted, `false` if the language does not exist
-         */
-        unregisterLanguage(locale: string) {
-            if (this.data.languages[locale] == undefined) {
-                return false;
-            }
-
-            if (locale == defaultlocale) {
-                return false;
-            }
-
-            this.data.languages[locale] = undefined;
-            fs.unlinkSync(path.join(localesfolder, `lang_${locale}.json`))
-            return true;
+        existsLanguage(locale:string){
+            return this.languages[locale] != undefined
         }
 
-        /**
-         * Set new localization for selected server
-         * @param {string} id Serverid
-         * @param {string} locale String literal representing the localization (for example: 'en' states for English language)
-         */
-        setServerLanguage(id: string, locale: string) {
-            this.data.serversettings[id] = locale;
+        private getPath(locale: string) {
+            return path.join(localesfolder, `lang_${locale}.json`)
         }
-
-        /**
-         * Get current server localization
-         * @param {string} id Serverid
-         * @returns {string} String literal representing the localization (for example: 'en' states for English language)
-         */
-        getServerLanguage(id: string) {
-            let lang = this.data.serversettings[id];
-            if (lang == undefined) {
-                lang = defaultlocale;
-                this.setServerLanguage(id, lang);
-            }
-            return lang;
-        }
-
-        /**
-         * Get localized message for server
-         * @param {string} id Serverid
-         * @param {string} key Dictionary phrase key
-         * @returns {string | undefined} Phrase, if it exists
-         */
-        getMessage(id: string, key: string) {
-            let locale = this.getServerLanguage(id);
-            return this.getMessageLocale(locale, key);
-        }
-
-        /** Internal way to get message */
-        private getMessageLocale(locale: string, key: string) {
-            return this.data.languages[locale][key];
-        }
-
-        //TODO: Make functions to get all available languages, and make getMessage create default language file for given locale if it does not exist
     }
 }
 

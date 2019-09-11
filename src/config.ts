@@ -1,6 +1,10 @@
 import * as fs from 'fs'
 import Log from './log'
 
+/* TODO:
+ * Document this module
+ */
+
 export namespace Config {
     const configpath = './config.json'
     const logger = new Log.LogHandler('config-module')
@@ -90,3 +94,5 @@ export namespace Config {
         }
     }
 }
+
+export default Config;
