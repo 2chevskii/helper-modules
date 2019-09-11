@@ -29,6 +29,10 @@ export namespace Lang {
          * Contains preferences for different servers and/or users.
          */
         private langdata: Object
+
+        /**
+         * Initializes new LanguageHandler object
+         */
         constructor() {
             this.languages = new Array<{}>()
             this.langdata = {}
