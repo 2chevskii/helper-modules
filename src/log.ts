@@ -6,13 +6,19 @@ import { join } from 'path'
  */
 export namespace Log {
 
-    /** Folder which contains logs. Not intended to be modified, but probably won't do any harm if you change it */
+    /**
+     * Folder which contains logs. Not intended to be modified, but probably won't do any harm if you change it
+     */
     const logfolder = './logs'
 
-    /** These characters are prohibited to use in the filename to avoid problems */
+    /** 
+     * These characters are prohibited to use in the filename to avoid problems
+     */
     const reservedCharacters = ["'", '"', '?', ':', '/', '\\', '>', '<', '*', '%', '|', ' ', '.', ',']
 
-    /** Helps organize timestamps */
+    /** 
+     * Helps organize timestamps
+     */
     interface TimeStamp {
         year: number;
         month: number;
@@ -23,12 +29,16 @@ export namespace Log {
         millisecond: number;
     }
 
-    /**
+    /** 
      * General export class, instantiate this if you want to use module functionality
      */
     export class LogHandler {
-        /** Prefix for log file name */
+
+        /** 
+         * Prefix for log file name
+         */
         private logfileprefix: string
+
         /**
          * Initializes new LogHandler object
          * @param {string | undefined} logfilename override default log file name prefix (`bot`)
@@ -49,8 +59,6 @@ export namespace Log {
             }
             this.logfileprefix = logfilename
         }
-
-
 
         /**
          * Returns `number` of log entries (`10` by default). 
@@ -93,7 +101,7 @@ export namespace Log {
          * @param {boolean | undefined} timestamp Set to false, if you don't want to add timestamp to the log entry
          * @param {boolean | undefined} toConsole Set to false, if you don't want to output log entry to console
          */
-        async writeLogFile(data: any, timestamp: boolean = true, toConsole: boolean = true): Promise<void> {
+        writeLogFile(data: any, timestamp: boolean = true, toConsole: boolean = true) {
             let str = data.toString()
             if (timestamp) {
                 str = this.formatLog(str)
