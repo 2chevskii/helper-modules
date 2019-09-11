@@ -10,7 +10,7 @@ export namespace Command {
     /**
      * Represents the type of command object
      */
-    export enum CommandType { PM, server, shared, console }
+    export enum CommandType { DM, server, shared, console }
 
     /**
      * Objects which implement this interface contain server data saved between sessions
@@ -23,6 +23,16 @@ export namespace Command {
         /** Not shipped with any alert methods (yet), but you can natively check this in your code to fire some function */
         alertonwrongcommand: boolean
     }
+
+    export class CommandResolveResult{
+        isCommand: boolean
+        nativeMessage: Message
+        text: string
+        cmd: string | undefined
+        args: string[] | undefined
+        
+    }
+    
 
     /**
      * Represents unsuccessfull command call
@@ -82,7 +92,7 @@ export namespace Command {
      */
     abstract class DiscordCommand implements ICommand {
         name: string
-        type: CommandType.server | CommandType.PM | CommandType.shared
+        type: CommandType.server | CommandType.DM | CommandType.shared
         callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)
         /**
          * Initializes new object of discord command. Cannot be called directly
@@ -90,7 +100,7 @@ export namespace Command {
          * @param {CommandType} type Command type. Set automatically by derived types' constructors
          * @param callback Command callback
          */
-        constructor(cmd: string, type: CommandType.server | CommandType.PM | CommandType.shared, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
+        constructor(cmd: string, type: CommandType.server | CommandType.DM | CommandType.shared, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
             this.name = cmd;
             this.type = type;
             this.callback = callback;
@@ -111,7 +121,7 @@ export namespace Command {
      */
     class PMCommand extends DiscordCommand implements ICommand {
         constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
-            super(cmd, CommandType.PM, callback);
+            super(cmd, CommandType.DM, callback);
         }
     }
 
@@ -212,7 +222,7 @@ export namespace Command {
                     this.commands[cmd] = new ServerCommand(cmd, callback)
                     break;
 
-                case CommandType.PM:
+                case CommandType.DM:
                     this.commands[cmd] = new PMCommand(cmd, callback)
                     break;
             }
@@ -251,7 +261,7 @@ export namespace Command {
          * @returns {boolean} `true` if the command was successfully executed, `false` if the command was not executed (does not exist, wrong channel type, etc.)
          */
         handleDiscordMessage(msg: Message) {
-            let cmdtype = msg.guild != undefined ? CommandType.server : CommandType.PM
+            let cmdtype = msg.guild != undefined ? CommandType.server : CommandType.DM
             if (cmdtype == CommandType.server && this.isCommandType(msg)) {
                 var cmd = this.parseDiscordCommand(msg);
             }
