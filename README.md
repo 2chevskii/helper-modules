@@ -123,6 +123,27 @@ lang.getMessage('1231515123', 'example 1') // Will return 'This is an example me
 lang.getMessage('31231', 'this key does not exist') // Will return 'this key does not exist'
 ```
 
+## Handling dynamic configuration
+`ConfigHandler` class was created specifically for operating with data which could be altered by bot owner through json file
+
+### Initialization
+Create new instance of the class (optionally with config object passed in as argument):
+<span style="color:#ffff00">JavaScript</span> example
+```js
+import helpers from 'discord-bot-helpers'
+
+const config = new helpers.Config.ConfigHandler({
+    bot_token: 'jasbhkjbhekjasealsenlasehjAJel',
+    ownerid: '1234567890'
+})
+```
+### Getting configuration properties
+<span style="color:#ffff00">JavaScript</span> example
+```js
+var token = config.getConfig('bot_token') //returns 'bot_token' property, defined earlier
+var newprop = config.getConfig('newprop', 'this is a default value for "newprop" property') //creates new config property with name 'newprop'
+```
+
 ## Handling commands
 `CommandHandler` class is the thing, when you need to have a quick and reliable way to implement user commands
 ### Initialization
