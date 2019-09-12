@@ -9,9 +9,9 @@
     "declarationDir": "lib/typings",
     "strict": true,
     "noImplicitAny": false,
-    "noImplicitThis": false,
-    "esModuleInterop": true,
-    "experimentalDecorators": true//,
+    "noImplicitThis": true,
+    "esModuleInterop": true//,
+    //"experimentalDecorators": true//,
     //"moduleResolution": "node"
   },
   "include": ["src"]

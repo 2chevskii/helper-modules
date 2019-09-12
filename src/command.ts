@@ -1,9 +1,12 @@
 import { Message } from 'discord.js'
 import * as fs from 'fs'
+import Log from './log'
 
 export namespace Command {
     /** Path to the file with saved settings, not intended to be changed, but nothing will probably go wrong if you know, what you are doing */
     const datafile = './commands.json'
+
+    const logger = new Log.LogHandler('command-module')
 
     //#region Types
 
@@ -16,44 +19,33 @@ export namespace Command {
      * Objects which implement this interface contain server data saved between sessions
      */
     interface IServerData {
+        id:string
         /** Server's current command prefix */
         prefix: string;
         /** Temporarily disabled, as this feature is not implemented yet. Later this will allow to disable certain commands on specific */
-        disabledCommands: Array<string>
-        /** Not shipped with any alert methods (yet), but you can natively check this in your code to fire some function */
-        alertonwrongcommand: boolean
+        disabledCommands: string[]
     }
 
-    export class CommandResolveResult{
+    export class CommandResolveResult {
         isCommand: boolean
-        nativeMessage: Message
+        message: Message | undefined
         text: string
         cmd: string | undefined
         args: string[] | undefined
-        
-    }
-    
-
-    /**
-     * Represents unsuccessfull command call
-     */
-    export class CommandException {
-        /** 'true' if the command with given name does not exist */
-        notExist: boolean
-        /** 'null' if the command does not exist, otherwise - specifies the type of the existing command */
-        nativeType: CommandType | null
-        /** Specifies the type expected from command */
-        calledType: CommandType
-        /**
-         * Initializes new CommandException object
-         * @param {boolean} notExist 'notExist' setter
-         * @param {CommandType | null} nativeType 'nativeType' setter
-         * @param {CommandType} calledType 'calledType' setter
-         */
-        constructor(notExist: boolean, nativeType: CommandType | null, calledType: CommandType) {
-            this.notExist = notExist
-            this.nativeType = nativeType
-            this.calledType = calledType
+        argsCount: number
+        wasExecuted: boolean
+        calledIn: CommandType | undefined
+        nativeIn: CommandType | undefined
+        constructor(iscmd: boolean, msg: Message | undefined, cmd: string | undefined, args: string[] | undefined, nativeIn: CommandType, calledIn: CommandType) {
+            this.isCommand = iscmd;
+            this.message = msg;
+            this.cmd = cmd;
+            this.args = args;
+            this.text = msg != undefined ? msg.content : cmd != undefined ? cmd : ''
+            this.argsCount = args != undefined ? args.length : 0
+            this.nativeIn = nativeIn;
+            this.calledIn = calledIn
+            this.wasExecuted = nativeIn == calledIn || (nativeIn == CommandType.shared && (calledIn == CommandType.DM || calledIn == CommandType.server))
         }
     }
 
@@ -119,7 +111,7 @@ export namespace Command {
     /**
      * Command which can only be executed in Discord PM. *Does not require prefix*
      */
-    class PMCommand extends DiscordCommand implements ICommand {
+    class DMCommand extends DiscordCommand implements ICommand {
         constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
             super(cmd, CommandType.DM, callback);
         }
@@ -152,15 +144,15 @@ export namespace Command {
          */
         constructor(defaultprefix: string = '/') {
             this.defaultprefix = defaultprefix;
+            this.commands = new Array<ICommand>();
             this.serversettings = new Array<IServerData>();
             this.loadServerSettings();
-            this.commands = new Array<ICommand>();
         }
 
         /** Getter for default prefix, as it is not intended to be modified during runtime
          * @returns {string} Default prefix
          */
-        get defaultPrefix() {
+        get defaultPrefix(): string {
             return this.defaultprefix
         }
 
@@ -205,27 +197,35 @@ export namespace Command {
                 return false;
             }
 
-            if (this.commands[cmd] != undefined) {
+            if (this.commands.find((c) => c.name == cmd && c.type == type) != undefined) { //command already exist
                 return false;
+            }
+
+            var command:ICommand = {
+                callback: () => {},
+                name: '',
+                type: CommandType.console
             }
 
             switch (type) {
                 case CommandType.console:
-                    this.commands[cmd] = new ConsoleCommand(cmd, callback)
+                    command = new ConsoleCommand(cmd, callback)
                     break;
 
                 case CommandType.shared:
-                    this.commands[cmd] = new SharedCommand(cmd, callback)
+                    command = new SharedCommand(cmd, callback)
                     break;
 
                 case CommandType.server:
-                    this.commands[cmd] = new ServerCommand(cmd, callback)
+                    command = new ServerCommand(cmd, callback)
                     break;
 
                 case CommandType.DM:
-                    this.commands[cmd] = new PMCommand(cmd, callback)
+                    command = new DMCommand(cmd, callback)
                     break;
             }
+
+            this.commands.push(command)
 
             return true;
         }
@@ -237,22 +237,20 @@ export namespace Command {
          */
         unregisterCommand(cmd: string) {
             cmd = cmd.toLowerCase();
-            if (this.commands[cmd] == undefined) {
+            if (this.commands.find((c) => c.name == cmd) == undefined) {
                 return false;
             }
-            this.commands[cmd] = undefined;
+            delete this.commands[this.commands.findIndex(c => c.name == cmd)]
         }
 
         /** Fires callback with given arguments for console command */
-        private callConsoleCallback(name: string, args: string[]) {
-            let callback = (this.commands[name] as ICommand).callback;
-            callback.call(this, args);
+        private callConsoleCallback(command: ConsoleCommand, args: string[]) {
+            command.callback.call(this, args);
         }
 
         /** Fires callback with given arguments for discord command */
-        private callDiscordCallback(name: string, message: Message, args: string[]) {
-            let callback = (this.commands[name] as ICommand).callback;
-            callback.call(this, message, args);
+        private callDiscordCallback(command: DiscordCommand, message: Message, args: string[]) {
+            command.callback.call(this, message, args);
         }
 
         /**
@@ -261,24 +259,7 @@ export namespace Command {
          * @returns {boolean} `true` if the command was successfully executed, `false` if the command was not executed (does not exist, wrong channel type, etc.)
          */
         handleDiscordMessage(msg: Message) {
-            let cmdtype = msg.guild != undefined ? CommandType.server : CommandType.DM
-            if (cmdtype == CommandType.server && this.isCommandType(msg)) {
-                var cmd = this.parseDiscordCommand(msg);
-            }
-            else {
-                var cmd = this.parsePMCommand(msg);
-            }
-            let ret = this.existsCommand(cmd, cmdtype);
-            if (ret == true) {
-                var args = this.parseCommandArguments(msg.content);
-                this.callDiscordCallback(cmd, msg, args);
-            }
-            return ret;
-        }
-
-        isCommandType(msg: Message) {
-            let prefix = this.prefixOnServer(msg.guild.id);
-            return msg.content.startsWith(prefix)
+            
         }
 
         /**
@@ -287,14 +268,7 @@ export namespace Command {
          * @returns {boolean} `true` if the command was successfully executed, `false` if the command does not exist
          */
         handleConsoleMessage(message: string) {
-            var cmd = this.parseConsoleCommand(message);
-            let ret = this.existsCommand(cmd, CommandType.console)
-            if (ret == true) {
-                var args = this.parseCommandArguments(message);
-                this.callConsoleCallback(cmd, args);
-                return ret;
-            }
-            else return false;
+            
         }
 
         /**
@@ -396,47 +370,12 @@ export namespace Command {
             }
         }
 
-        /**
-         * Returns state of the `alertonwrongcommand` property for given server id, or sets it
-         * @param {string} id Serverid
-         * @param {boolean | undefined} set Sets new state for that property, can be omitted to get current value
-         * @returns {boolean | undefined} Value of `IServerData.alertonwrongcommand` if `set` argument is omitted, otherwise sets this property
-         */
-        alertOnServer(id: string, set?: boolean) {
-            if (this.serversettings[id] == undefined) {
-                this.serversettings[id] = {} as IServerData
-            }
-            if (set == undefined) {
-                return (this.serversettings[id] as IServerData).alertonwrongcommand
-            }
+        getPrefix(id: string){
 
-            (this.serversettings[id] as IServerData).alertonwrongcommand = set;
-            this.saveServerSettings();
         }
 
-        /**
-         * Returns current prefix for given serverid, or sets it. If the server is not recorded in data yet, it also creates default profile for the server
-         * @param {string} id Serverid
-         * @param {string | undefined} prefix Sets new prefix for specified server, can be omitted to get current prefix
-         * @returns {string} Prefix
-         */
-        prefixOnServer(id: string, prefix?: string) {
-            if (this.serversettings[id] == undefined) {
-                this.serversettings[id] = {} as IServerData
-            }
-            if (prefix != undefined) {
-                (this.serversettings[id] as IServerData).prefix = prefix;
-                this.saveServerSettings();
-                return prefix;
-            }
-            else if (this.serversettings[id] == undefined) {
-                (this.serversettings[id] as IServerData).prefix = this.defaultprefix;
-                this.saveServerSettings();
-                return this.defaultprefix
-            }
-            else {
-                return (this.serversettings[id] as IServerData).prefix;
-            }
+        setPrefix(id: string, prefix: string){
+            
         }
 
         // Features on-the-way
