@@ -1,310 +1,228 @@
-import { Message } from 'discord.js'
+import { Message, User } from 'discord.js'
 import * as fs from 'fs'
 import Log from './log'
 
 export namespace Command {
-    /** Path to the file with saved settings, not intended to be changed, but nothing will probably go wrong if you know, what you are doing */
-    const datafile = './commands.json'
+
+    const datapath = './commands_data.json'
 
     const logger = new Log.LogHandler('command-module')
 
-    //#region Types
-
-    /**
-     * Represents the type of command object
-     */
-    export enum CommandType { DM, server, shared, console }
-
-    /**
-     * Objects which implement this interface contain server data saved between sessions
-     */
-    interface IServerData {
-        id:string
-        /** Server's current command prefix */
-        prefix: string;
-        /** Temporarily disabled, as this feature is not implemented yet. Later this will allow to disable certain commands on specific */
-        disabledCommands: string[]
-    }
-
-    export class CommandResolveResult {
-        isCommand: boolean
-        message: Message | undefined
-        text: string
-        cmd: string | undefined
-        args: string[] | undefined
-        argsCount: number
-        wasExecuted: boolean
-        calledIn: CommandType | undefined
-        nativeIn: CommandType | undefined
-        constructor(iscmd: boolean, msg: Message | undefined, cmd: string | undefined, args: string[] | undefined, nativeIn: CommandType, calledIn: CommandType) {
-            this.isCommand = iscmd;
-            this.message = msg;
-            this.cmd = cmd;
-            this.args = args;
-            this.text = msg != undefined ? msg.content : cmd != undefined ? cmd : ''
-            this.argsCount = args != undefined ? args.length : 0
-            this.nativeIn = nativeIn;
-            this.calledIn = calledIn
-            this.wasExecuted = nativeIn == calledIn || (nativeIn == CommandType.shared && (calledIn == CommandType.DM || calledIn == CommandType.server))
-        }
-    }
-
-    /**
-     * Abstraction on all command types
-     */
-    interface ICommand {
-        /** Command name, *does not* include prefix */
-        name: string
-        /** Command type: PM | server | shared | console */
+    export interface ICommand {
+        name: string;
         type: CommandType
-        /** Function that can be fired on command execution. *Be aware:* arguments may vary depending on command type */
         callback: (...params) => void
     }
 
-    /**
-     * Command which can only be executed inside of Node.js console, or every other input prompt which *does not* require prefix
-     */
     class ConsoleCommand implements ICommand {
-        name: string
-        type = CommandType.console
-        callback: ((args: string[]) => void) | (() => void)
-        /**
-         * Initializes new object of console command
-         * @param {string} cmd Command name
-         * @param callback Command callback
-         */
-        constructor(cmd: string, callback: ((args: string[]) => void) | (() => void)) {
-            this.name = cmd;
+        name: string;
+        type: CommandType.console = CommandType.console;
+        callback: (() => void) | ((args: string[]) => void)
+
+        constructor(name: string, callback: (() => void) | ((args: string[]) => void)) {
+            this.name = name;
             this.callback = callback
         }
     }
 
-    /**
-     * Abstraction on Discord commands
-     */
     abstract class DiscordCommand implements ICommand {
-        name: string
-        type: CommandType.server | CommandType.DM | CommandType.shared
-        callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)
-        /**
-         * Initializes new object of discord command. Cannot be called directly
-         * @param {string} cmd Command name
-         * @param {CommandType} type Command type. Set automatically by derived types' constructors
-         * @param callback Command callback
-         */
-        constructor(cmd: string, type: CommandType.server | CommandType.DM | CommandType.shared, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
-            this.name = cmd;
+        name: string;
+        type: CommandType.DM | CommandType.shared | CommandType.server
+        callback: (() => void) | ((msg: Message) => void) | ((msg: Message, args: string[]) => void)
+
+        constructor(name: string, type: CommandType.DM | CommandType.shared | CommandType.server, callback: (() => void) | ((msg: Message) => void) | ((msg: Message, args: string[]) => void)) {
+            this.name = name;
             this.type = type;
             this.callback = callback;
         }
     }
 
-    /**
-     * Command which can be executed both on Discord server and in PM
-     */
-    class SharedCommand extends DiscordCommand implements ICommand {
-        constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
-            super(cmd, CommandType.shared, callback);
-        }
-    }
-
-    /**
-     * Command which can only be executed in Discord PM. *Does not require prefix*
-     */
     class DMCommand extends DiscordCommand implements ICommand {
-        constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
-            super(cmd, CommandType.DM, callback);
+        constructor(name: string, callback: (() => void) | ((msg: Message) => void) | ((msg: Message, args: string[]) => void)) {
+            super(name, CommandType.DM, callback)
         }
     }
 
-    /**
-     * Command which can only be executed on Discord server
-     */
     class ServerCommand extends DiscordCommand implements ICommand {
-        constructor(cmd: string, callback: ((message: Message, args: string[]) => void) | ((message: Message) => void) | (() => void)) {
-            super(cmd, CommandType.server, callback);
+        constructor(name: string, callback: (() => void) | ((msg: Message) => void) | ((msg: Message, args: string[]) => void)) {
+            super(name, CommandType.server, callback)
         }
     }
 
-    //#endregion
+    class SharedCommand extends DiscordCommand implements ICommand {
+        constructor(name: string, callback: (() => void) | ((msg: Message) => void) | ((msg: Message, args: string[]) => void)) {
+            super(name, CommandType.shared, callback)
+        }
+    }
 
-    /**
-     * General export class. Create an instance of this if you want to use this module functionality
-     */
     export class CommandHandler {
-        /** Saves server preferences such as `prefix` */
-        private serversettings: Array<IServerData>;
-        /** Default prefix for all the new servers */
-        private defaultprefix: string;
-        /** Contains all of the registered commands */
-        private commands: Array<ICommand>
-        /**
-         * Initializes new instance of CommandHandler object. `defaultPrefix` can be omitted
-         * @param {string | undefined} defaultprefix Sets default value for prefix on servers. If omitted, it will be `/`
-         */
-        constructor(defaultprefix: string = '/') {
-            this.defaultprefix = defaultprefix;
-            this.commands = new Array<ICommand>();
-            this.serversettings = new Array<IServerData>();
-            this.loadServerSettings();
+        data: Data[]
+        commands: ICommand[]
+        defaultprefix: string
+        constructor(defaultprefix: string = '!') {
+            this.defaultprefix = defaultprefix
+            this.data = new Array<Data>()
+            this.commands = new Array<ICommand>()
+            this.loadData()
         }
 
-        /** Getter for default prefix, as it is not intended to be modified during runtime
-         * @returns {string} Default prefix
-         */
-        get defaultPrefix(): string {
+        onDiscordMessage(message: Message): CommandResolveResult {
+            var command = this.parseCommand(message)
+            var calledtype = message.guild == undefined ? CommandType.DM : CommandType.server
+            if (command == undefined) {
+                return new CommandResolveResult(false, message.content, message, command, undefined, calledtype, undefined)
+            }
+
+            var args = this.parseArguments(message.content)
+
+            var matchingCommands = this.findCommands(command)
+
+            if (matchingCommands.length < 1) {
+                return new CommandResolveResult(true, message.content, message, command, args, calledtype, undefined)
+            }
+
+            var discordCommands = matchingCommands.filter(cmd => cmd instanceof DiscordCommand)
+
+            if (discordCommands.length < 1) {
+                return new CommandResolveResult(true, message.content, message, command, args, calledtype, matchingCommands[0].type)
+            }
+            else{
+                let exactCommand = discordCommands[0]
+                let callback = exactCommand.callback
+                callback.call(this, args)
+                return new CommandResolveResult(true, message.content, message, command, args, calledtype, exactCommand.type)
+            }
+        }
+
+        onConsoleMessage(message: string): CommandResolveResult {
+            var command = this.parseCommand(message)
+            if (command == undefined) {
+                return new CommandResolveResult(false, message, undefined, command, undefined, CommandType.console, undefined)
+            }
+            var args = this.parseArguments(message)
+
+            var matchingCommands = this.findCommands(command)
+
+            if (matchingCommands.length < 1) {
+                return new CommandResolveResult(true, message, undefined, command, args, CommandType.console, undefined)
+            }
+            else if (matchingCommands.filter(cmd => cmd.type == CommandType.console).length < 1) {
+                return new CommandResolveResult(true, message, undefined, command, args, CommandType.console, matchingCommands[0].type)
+            }
+            else {
+                let exactCommand = matchingCommands.filter(cmd => cmd.type == CommandType.console)[0]
+                let callback = exactCommand.callback
+                callback.call(this, args)
+                return new CommandResolveResult(true, message, undefined, command, args, CommandType.console, exactCommand.type)
+            }
+        }
+
+        setPrefix(id: string, prefix: string) {
+            var target = this.findData(id)
+            target.setNewPrefix(prefix)
+        }
+
+        findPrefix(id: string): string {
+            var target = this.findData(id)
+            return target.getCurrentPrefix()
+        }
+
+        findData(id: string) {
+            var data = this.data.find(data => data.id == id)
+            if (data == undefined) {
+                data = new Data(id, this.defaultPrefix)
+                this.data.push(data)
+            }
+            return data
+        }
+
+        get defaultPrefix() {
             return this.defaultprefix
         }
 
-        /** Create new, or load existing settings file */
-        private loadServerSettings() {
-            if (!fs.existsSync(datafile)) {
-                this.saveServerSettings();
-            }
-
-            try {
-                this.serversettings = JSON.parse(fs.readFileSync(datafile, {
-                    encoding: 'utf-8',
-                    flag: 'r'
-                }))
-            } catch {
-                fs.unlinkSync(datafile);
-                this.loadServerSettings();
+        set defaultPrefix(prefix) {
+            if (prefix.trim().length > 0) {
+                this.defaultprefix = prefix
             }
         }
 
-        /** Save current `serversettings` to the file */
-        private saveServerSettings() {
-            fs.writeFileSync(datafile, JSON.stringify(this.serversettings, null, '\t'))
-        }
-
-        /**
-         * Register new command. Needs to be fired *every* time you load your app, since commands are not saved anywhere
-         * @param {string} cmd Name of the command. *Case-independent*. Cannot contain special symbols such as:
-         * - `space`
-         * - `forwardslash`
-         * - `backslash`
-         * - `quotes` (single or double)
-         * @param {CommandType} type Type of the command. `CommandType.server` will probably be the choice in most situations
-         * @param {(...args) => void} callback Command callback, depends on the type of command. Can contain equal or less amount of arguments: 
-         * - For console commands -> `(string[]) => void`
-         * - For discord commands -> `(Discord.Message, string[]) => void`
-         * @returns `true` if the command was registered successfully, `false` if the command contains blacklisted symbols or already exists
-         */
-        registerCommand(cmd: string, type: CommandType, callback: (...args) => void) {
-            cmd = cmd.toLowerCase();
-            if (cmd.includes('"') || cmd.includes("'") || cmd.includes('/') || cmd.includes(' ') || cmd.includes('\\')) { //command name cannot include special symbols such as ' " / \ \s
+        registerCommand(command: ICommand) {
+            if (this.findCommands(command.name, command.type).length > 0) {
                 return false;
             }
-
-            if (this.commands.find((c) => c.name == cmd && c.type == type) != undefined) { //command already exist
-                return false;
-            }
-
-            var command:ICommand = {
-                callback: () => {},
-                name: '',
-                type: CommandType.console
-            }
-
-            switch (type) {
+            var cmd: ICommand
+            var flag: boolean
+            switch (command.type) {
                 case CommandType.console:
-                    command = new ConsoleCommand(cmd, callback)
-                    break;
-
-                case CommandType.shared:
-                    command = new SharedCommand(cmd, callback)
-                    break;
-
-                case CommandType.server:
-                    command = new ServerCommand(cmd, callback)
+                    cmd = new ConsoleCommand(command.name, command.callback)
                     break;
 
                 case CommandType.DM:
-                    command = new DMCommand(cmd, callback)
+                    cmd = new DMCommand(command.name, command.callback)
+                    break;
+
+                case CommandType.shared:
+                    cmd = new SharedCommand(command.name, command.callback)
+                    break;
+
+                case CommandType.server:
+                    cmd = new ServerCommand(command.name, command.callback)
                     break;
             }
-
-            this.commands.push(command)
-
+            //@ts-ignore //Could properly make a assignment, but I'm lazy and this looks better even tho analyzer throws error
+            this.commands.push(cmd)
             return true;
         }
 
-        /**
-         * Deletes command
-         * @param {string} cmd Name of the command
-         * @returns {boolean} `true` if the command used to exist and was successfully deleted, `false` if the command does not exist
-         */
-        unregisterCommand(cmd: string) {
-            cmd = cmd.toLowerCase();
-            if (this.commands.find((c) => c.name == cmd) == undefined) {
+        unregisterCommand(name: string, type: CommandType) {
+            var commands = this.findCommands(name, type)
+            if (commands.length < 1) {
                 return false;
             }
-            delete this.commands[this.commands.findIndex(c => c.name == cmd)]
+            else {
+                delete this.commands[this.commands.findIndex((cmd) => cmd.name == name && cmd.type == type)]
+                return true;
+            }
         }
 
-        /** Fires callback with given arguments for console command */
-        private callConsoleCallback(command: ConsoleCommand, args: string[]) {
-            command.callback.call(this, args);
+        findCommands(name: string, type?: CommandType) {
+            if (type === undefined) {
+                return this.commands.filter(cmd => cmd.name == name)
+            }
+            else {
+                return this.commands.filter(cmd => cmd.name == name && cmd.type == type)
+            }
         }
 
-        /** Fires callback with given arguments for discord command */
-        private callDiscordCallback(command: DiscordCommand, message: Message, args: string[]) {
-            command.callback.call(this, message, args);
+        parseCommand(command: string | Message): string | undefined {
+            if (typeof command == 'string') {
+                let cmd = command.split(' ')[0].trim().toLowerCase()
+                if (cmd.length < 1) {
+                    return undefined
+                }
+                return cmd
+            }
+            else {
+                let prefix = this.findPrefix(command.author.id)
+                let array = command.content.split(' ')
+                if (array.length < 1) {
+                    return undefined;
+                }
+                let cmd = array[0]
+
+                if (!cmd.includes(prefix)) {
+                    return undefined;
+                }
+
+                cmd = cmd.replace(prefix, '').trim().toLowerCase()
+                if (cmd.length < 1) {
+                    return undefined
+                }
+                return cmd
+            }
         }
 
-        /**
-         * Add this to your `Discord.Client.on('message')` event handler
-         * @param {Message} msg Message which was sent by user
-         * @returns {boolean} `true` if the command was successfully executed, `false` if the command was not executed (does not exist, wrong channel type, etc.)
-         */
-        handleDiscordMessage(msg: Message) {
-            
-        }
-
-        /**
-         * Add this to your 'console' event handler.
-         * @param {string} message Message which was received by console prompt
-         * @returns {boolean} `true` if the command was successfully executed, `false` if the command does not exist
-         */
-        handleConsoleMessage(message: string) {
-            
-        }
-
-        /**
-         * Attempts parsing of the command name from the message
-         * @param msg Message object
-         * @returns {string} Parsed command
-         */
-        private parsePMCommand(msg: Message) {
-            return msg.content.split(' ')[0].toLowerCase().trim()
-        }
-
-        /**
-         * Attempts parsing of the command name from the message
-         * @param msg Message object
-         * @returns {string} Parsed command
-         */
-        private parseDiscordCommand(msg: Message) { //later this will include checks for disabled commands on certain server
-            var prefix = this.prefixOnServer(msg.guild.id)
-            return msg.content.split(' ')[0].replace(prefix, '').toLowerCase().trim();
-        }
-
-        /**
-         * Attempts parsing of the command name from the message
-         * @param {string} msg Message object
-         * @returns {string} Parsed command
-         */
-        private parseConsoleCommand(msg: string) {
-            return msg.split(' ')[0].toLowerCase().trim();
-        }
-
-        /**
-         * Returns an array of parsed arguments.
-         * @param {string} msg Message object
-         * @returns {string[]} Array of parsed arguments. *Cannot be null, but can be 0 length*
-         */
-        private parseCommandArguments(msg: string) {
+        parseArguments(msg: string) {
             var args = new Array<string>(0);
             let index = msg.indexOf(' ')
             msg = msg.substr(index).trim();
@@ -351,48 +269,104 @@ export namespace Command {
             return args;
         }
 
-        /**
-         * Checks if the command exists under the given conditions
-         * @param {string} cmd Command name
-         * @param {CommandType} type Command type
-         * @returns {boolean | CommandException} Success or generated exception
-         */
-        private existsCommand(cmd: string, type: CommandType) {
-            var c = (this.commands[cmd] as ICommand);
-            if (c == undefined || c == null) {
-                return new CommandException(true, null, type)
+        loadData() {
+            if (!fs.existsSync(datapath)) {
+                this.saveData();
             }
-            if (type == c.type || (c.type == CommandType.shared && type != CommandType.console)) {
-                return true;
-            }
-            else {
-                return new CommandException(false, c.type, type);
+
+            let json = fs.readFileSync(datapath, { encoding: 'utf-8', flag: 'r' })
+            try {
+                this.data = JSON.parse(json);
+            } catch (ex) {
+                this.data = new Array<Data>()
+                fs.unlinkSync(datapath)
+                this.loadData()
             }
         }
 
-        getPrefix(id: string){
+        saveData() {
+            fs.writeFileSync(datapath, JSON.stringify(this.data, null, '\t'))
+        }
+    }
 
+    /**
+     * Object which is retuned from the message handlers
+     */
+    export class CommandResolveResult {
+        isCommand: boolean
+        message: Message | undefined
+        text: string
+        cmd: string | undefined
+        args: string[] | undefined
+        argsCount: number
+        wasExecuted: boolean
+        calledIn: CommandType | undefined
+        nativeIn: CommandType | undefined
+        constructor(iscmd: boolean, text: string, msg: Message | undefined, cmd: string | undefined, args: string[] | undefined, calledIn: CommandType, nativeIn: CommandType | undefined) {
+            this.isCommand = iscmd
+            this.message = msg
+            this.cmd = cmd
+            this.args = args
+            this.text = text
+            this.argsCount = args != undefined ? args.length : 0
+            this.nativeIn = nativeIn;
+            this.calledIn = calledIn
+            this.wasExecuted = nativeIn == calledIn || (nativeIn == CommandType.shared && (calledIn == CommandType.DM || calledIn == CommandType.server))
+        }
+    }
+
+    /**
+     * Represents the type of command object
+     */
+    export enum CommandType { DM = 0, server = 1, shared = 2, console = 3 }
+
+    class Data {
+        readonly id: string;
+        private prefix: string;
+        private disabledcommands: string[];
+
+        constructor(id: string, prefix: string) {
+            this.id = id;
+            this.prefix = prefix;
+            this.disabledcommands = new Array<string>();
         }
 
-        setPrefix(id: string, prefix: string){
-            
+        enableCommand(cmd: string) {
+            if (this.isCommandDisabled(cmd)) {
+                delete this.disabledcommands[this.disabledcommands.indexOf(cmd)]
+            }
         }
 
-        // Features on-the-way
+        disableCommand(cmd: string) {
+            if (!this.isCommandDisabled(cmd)) {
+                this.disabledcommands.push(cmd)
+            }
+        }
 
-        //isCommandAttempt(msg: Message)
+        isCommandDisabled(command: string) {
+            return this.disabledcommands.includes(command)
+        }
 
-        // toggleCommandOnServer(id:string, cmd:string){
-        //     if (this.isCommandDisabledOnServer(id,cmd)) {
+        getDisabledCommands() {
+            let dcom = new Array<string>(0);
+            this.disabledcommands.forEach(cmd => {
+                dcom.push(cmd)
+            })
+            return dcom;
+        }
 
-        //         (this.serversettings[id] as IServerData).disabledCommands[(this.serversettings[id] as IServerData).disabledCommands.findIndex(c => c == cmd)] = ''
-        //     }
-        // }
+        getCurrentPrefix() {
+            return this.prefix
+        }
 
-        // isCommandDisabledOnServer(id:string, cmd:string){
-        //     return (this.serversettings[id] as IServerData).disabledCommands.findIndex(c => c == cmd) != -1;
-        // }
+        setNewPrefix(newprefix: string) {
+            if (newprefix == null || newprefix.length < 1 || newprefix.includes(' ')) {
+                return false;
+            }
 
+            this.prefix = newprefix;
+            return true;
+        }
     }
 }
 

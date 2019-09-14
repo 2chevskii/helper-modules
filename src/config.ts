@@ -1,6 +1,8 @@
 import * as fs from 'fs'
 import Log from './log'
 
+//import {loadConfiguration, configuration} from './index'
+
 /**
  * Contains definitions which can be useful for creating dynamic configuration for you application.
  */

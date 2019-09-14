@@ -10,7 +10,8 @@
     "strict": true,
     "noImplicitAny": false,
     "noImplicitThis": true,
-    "esModuleInterop": true//,
+    "esModuleInterop": true,
+    "strictFunctionTypes": false
     //"experimentalDecorators": true//,
     //"moduleResolution": "node"
   },
