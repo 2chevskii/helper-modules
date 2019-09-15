@@ -14,7 +14,7 @@ export namespace Log {
     /** 
      * These characters are prohibited to use in the filename to avoid problems.
      */
-    const reservedCharacters = ["'", '"', '?', ':', '/', '\\', '>', '<', '*', '%', '|', ' ', '.', ',']
+    export const reservedCharacters = ["'", '"', '?', ':', '/', '\\', '>', '<', '*', '%', '|', ' ', '.', ',']
 
     /** 
      * Helps organize timestamps.
