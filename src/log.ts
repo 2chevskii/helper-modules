@@ -2,6 +2,47 @@ import * as fs from 'fs'
 import { join } from 'path'
 
 export namespace Log {
+    
+    const handlers = new Array<Log.Internal.LogHandlerInternal>()
+
+    const logfolder = './logs'
+
+    const _reservedCharacters = ["'", '"', '?', ':', '/', '\\', '>', '<', '*', '%', '|', ' ', '.', ',']
+
+    export const ReservedCharacters = (() => {
+        var array = new Array<string>()
+        _reservedCharacters.forEach(char => array.push(char))
+        return array
+    })()
+
+    interface TimeStamp {
+        year: number;
+        month: number;
+        day: number;
+        hour: number;
+        minute: number;
+        second: number;
+        millisecond: number;
+    }
+
+    export class LogHandler {
+        constructor(logfilename?: string) {
+            var handler = new Log.Internal.LogHandlerInternal(logfilename)
+            handlers[this.toString()] = handler
+        }
+
+        showLog(count: number = 10): string[] {
+            return handlers[this.toString()].showLog(count)
+        }
+
+        writeLog(data: any, timestamp: boolean = true): void {
+            handlers[this.toString()].writeLog(data, timestamp)
+        }
+
+        writeLogFile(data: any, timestamp: boolean = true, toConsole: boolean = true): void {
+            handlers[this.toString()].writeLogFile(data, timestamp, toConsole)
+        }
+    }
 
     namespace Log.Internal {
         export class LogHandlerInternal {
@@ -115,47 +156,6 @@ export namespace Log {
             private get logFilePath(): string {
                 return join(logfolder, this.logfileName)
             }
-        }
-    }
-
-    const handlers = new Array<Log.Internal.LogHandlerInternal>()
-
-    const logfolder = './logs'
-
-    const _reservedCharacters = ["'", '"', '?', ':', '/', '\\', '>', '<', '*', '%', '|', ' ', '.', ',']
-
-    export const ReservedCharacters = (() => {
-        var array = new Array<string>()
-        _reservedCharacters.forEach(char => array.push(char))
-        return array
-    })()
-
-    interface TimeStamp {
-        year: number;
-        month: number;
-        day: number;
-        hour: number;
-        minute: number;
-        second: number;
-        millisecond: number;
-    }
-
-    export class LogHandler {
-        constructor(logfilename?: string) {
-            var handler = new Log.Internal.LogHandlerInternal(logfilename)
-            handlers[this.toString()] = handler
-        }
-
-        showLog(count: number = 10): string[] {
-            return handlers[this.toString()].showLog(count)
-        }
-
-        writeLog(data: any, timestamp: boolean = true): void {
-            handlers[this.toString()].writeLog(data, timestamp)
-        }
-
-        writeLogFile(data: any, timestamp: boolean = true, toConsole: boolean = true): void {
-            handlers[this.toString()].writeLogFile(data, timestamp, toConsole)
         }
     }
 }
