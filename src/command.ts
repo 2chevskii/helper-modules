@@ -22,23 +22,23 @@ export namespace Command {
                 if (command == undefined) {
                     return new CommandResolveResult(false, message.content, message, command, undefined, calledtype, undefined)
                 }
-    
+
                 var args = this.parseArguments(message.content)
-    
+
                 var matchingCommands = this.findCommands(command)
-    
+
                 if (matchingCommands.length < 1) {
                     return new CommandResolveResult(true, message.content, message, command, args, calledtype, undefined)
                 }
-    
+
                 var discordCommands = matchingCommands.filter(cmd => cmd instanceof DiscordCommand)
-    
+
                 if (discordCommands.length < 1) {
                     return new CommandResolveResult(true, message.content, message, command, args, calledtype, matchingCommands[0].type)
                 }
-    
+
                 var typedCommands = discordCommands.filter(cmd => cmd.type == calledtype || cmd.type == CommandType.shared)
-    
+
                 if (typedCommands.length < 1) {
                     return new CommandResolveResult(true, message.content, message, command, args, calledtype, matchingCommands[0].type)
                 }
@@ -50,16 +50,16 @@ export namespace Command {
                     return new CommandResolveResult(true, message.content, message, command, args, calledtype, exactCommand.type)
                 }
             }
-    
+
             onConsoleMessage(message: string): CommandResolveResult {
                 var command = this.parseCommand(message)
                 if (command == undefined) {
                     return new CommandResolveResult(false, message, undefined, command, undefined, CommandType.console, undefined)
                 }
                 var args = this.parseArguments(message)
-    
+
                 var matchingCommands = this.findCommands(command)
-    
+
                 if (matchingCommands.length < 1) {
                     return new CommandResolveResult(true, message, undefined, command, args, CommandType.console, undefined)
                 }
@@ -73,19 +73,31 @@ export namespace Command {
                     return new CommandResolveResult(true, message, undefined, command, args, CommandType.console, exactCommand.type)
                 }
             }
-    
+
+            getAllCommands() {
+                var arr = new Array<ICommand>()
+                this.commands.forEach(cmd => {
+                    arr.push({
+                        name: cmd.name,
+                        type: cmd.type,
+                        callback: cmd.callback
+                    })
+                })
+                return arr
+            }
+
             setPrefix(id: string, prefix: string) {
                 var target = this.findData(id)
                 target.setNewPrefix(prefix)
                 this.saveData()
             }
-    
+
             findPrefix(id: string): string {
                 var target = this.findData(id)
                 return target.getCurrentPrefix()
             }
-    
-            findData(id: string) {
+
+            private findData(id: string) {
                 var data = this.data.find(data => data.id == id)
                 if (data == undefined) {
                     data = new Data(id, this.defaultPrefix)
@@ -94,29 +106,29 @@ export namespace Command {
                 }
                 return data
             }
-    
+
             get defaultPrefix() {
                 return this.defaultprefix
             }
-    
+
             set defaultPrefix(prefix) {
                 if (prefix.trim().length > 0) {
                     this.defaultprefix = prefix
                 }
             }
-    
-            public registerCommand(name: string, type: CommandType, callback: (...args) => void) {
+
+            registerCommand(name: string, type: CommandType, callback: (...args) => void) {
                 name = name.toLowerCase()
                 Log.reservedCharacters.forEach(char => {
                     if (name.includes(char)) {
                         return false;
                     }
                 })
-    
+
                 if (this.findCommands(name, type).length > 0) {
                     return false;
                 }
-    
+
                 var commands = this.findCommands(name)
                 if (commands.length > 0) {
                     if (type == CommandType.shared) { //replacing server/dm commands with shared type
@@ -130,21 +142,21 @@ export namespace Command {
                         return false;
                     }
                 }
-    
+
                 var cmd: ICommand
                 switch (type) {
                     case CommandType.console:
                         cmd = new ConsoleCommand(name, callback)
                         break;
-    
+
                     case CommandType.DM:
                         cmd = new DMCommand(name, callback)
                         break;
-    
+
                     case CommandType.shared:
                         cmd = new SharedCommand(name, callback)
                         break;
-    
+
                     case CommandType.server:
                         cmd = new ServerCommand(name, callback)
                         break;
@@ -155,9 +167,9 @@ export namespace Command {
                 this.commands.push(cmd)
                 return true;
             }
-    
+
             unregisterCommand(name: string, type: CommandType) {
-    
+
                 var commands = this.findCommands(name, type)
                 if (commands.length < 1) {
                     return false;
@@ -169,8 +181,8 @@ export namespace Command {
                     return true;
                 }
             }
-    
-            findCommands(name: string, type?: CommandType) {
+
+            private findCommands(name: string, type?: CommandType) {
                 if (type === undefined) {
                     return this.commands.filter(cmd => cmd.name == name)
                 }
@@ -178,7 +190,7 @@ export namespace Command {
                     return this.commands.filter(cmd => cmd.name == name && cmd.type == type)
                 }
             }
-    
+
             private parseCommand(command: string | Message): string | undefined {
                 if (typeof command == 'string') {
                     let cmd = command.split(' ')[0].trim().toLowerCase()
@@ -194,11 +206,11 @@ export namespace Command {
                         return undefined;
                     }
                     let cmd = array[0]
-    
+
                     if (!cmd.startsWith(prefix)) {
                         return undefined;
                     }
-    
+
                     cmd = cmd.replace(prefix, '').trim().toLowerCase()
                     if (cmd.length < 1) {
                         return undefined
@@ -206,16 +218,16 @@ export namespace Command {
                     return cmd
                 }
             }
-    
-            parseArguments(msg: string) {
+
+            private parseArguments(msg: string) {
                 var args = new Array<string>(0);
                 let index = msg.indexOf(' ')
                 msg = msg.substr(index).trim();
-    
+
                 if (index == -1 || msg.length < 1) {
                     return args;
                 }
-    
+
                 let flag = false;
                 let current = ''
                 for (let i = 0; i < msg.length; i++) {
@@ -253,12 +265,12 @@ export namespace Command {
                 current = ''
                 return args;
             }
-    
-            loadData() {
+
+            private loadData() {
                 if (!fs.existsSync(datapath)) {
                     this.saveData();
                 }
-    
+
                 let json = fs.readFileSync(datapath, { encoding: 'utf-8', flag: 'r' })
                 try {
                     let tempdata = JSON.parse(json) as Data[]
@@ -271,16 +283,26 @@ export namespace Command {
                     this.loadData()
                 }
             }
-    
-            saveData() {
+
+            private saveData() {
                 fs.writeFileSync(datapath, JSON.stringify(this.data, null, '\t'))
+            }
+
+            disableCommand(id: string, name: string) {
+                this.findData(id).disableCommand(name)
+            }
+
+            enableCommand(id: string, name: string) {
+                this.findData(id).enableCommand(name)
+            }
+
+            getDisabledCommands(id: string) {
+                return this.findData(id).getDisabledCommands()
             }
         }
     }
 
     const datapath = './commands_data.json'
-
-    const logger = new Log.LogHandler('command-module')
 
     const handlers = new Array<Command.Internal.CommandHandler>()
 
@@ -331,288 +353,57 @@ export namespace Command {
         }
     }
 
-    export class CommandHandler {
-        readonly index: number
-        //data: Data[]
-        //commands: ICommand[]
-        //defaultprefix: string
+    export class CommandHandler { //works as an API to expose some internal functions
         constructor(defaultprefix: string = '!') {
-            this.index = handlers.length
             var handler = new Command.Internal.CommandHandler(defaultprefix)
-            handlers[this.index] = handler
-            //this.defaultprefix = defaultprefix
-            //this.data = new Array<Data>()
-            //this.commands = new Array<ICommand>()
-            //this.loadData()
+            handlers[this.toString()] = handler
+        }
+
+        onMessage(message: string): CommandResolveResult
+        onMessage(message: Message): CommandResolveResult
+        onMessage(message: string | Message): CommandResolveResult {
+            if (typeof message == 'string') {
+                return this.onConsoleMessage(message)
+            }
+            else {
+                return this.onDiscordMessage(message)
+            }
         }
 
         onDiscordMessage(message: Message): CommandResolveResult {
-            return handlers[this.index].onDiscordMessage(message)
-            // var command = this.parseCommand(message)
-            // var calledtype = message.guild == undefined ? CommandType.DM : CommandType.server
-            // if (command == undefined) {
-            //     return new CommandResolveResult(false, message.content, message, command, undefined, calledtype, undefined)
-            // }
-
-            // var args = this.parseArguments(message.content)
-
-            // var matchingCommands = this.findCommands(command)
-
-            // if (matchingCommands.length < 1) {
-            //     return new CommandResolveResult(true, message.content, message, command, args, calledtype, undefined)
-            // }
-
-            // var discordCommands = matchingCommands.filter(cmd => cmd instanceof DiscordCommand)
-
-            // if (discordCommands.length < 1) {
-            //     return new CommandResolveResult(true, message.content, message, command, args, calledtype, matchingCommands[0].type)
-            // }
-
-            // var typedCommands = discordCommands.filter(cmd => cmd.type == calledtype || cmd.type == CommandType.shared)
-
-            // if (typedCommands.length < 1) {
-            //     return new CommandResolveResult(true, message.content, message, command, args, calledtype, matchingCommands[0].type)
-            // }
-            // else { //FORGOT TO MAKE FILTER BY SERVER/SHARED/DM !!!!!!!!!!!!!!
-            //     //PREFIX SETTING DOES NOT WORK OR SOMETHING
-            //     let exactCommand = typedCommands[0]
-            //     let callback = exactCommand.callback
-            //     callback.call(this, message, args)
-            //     return new CommandResolveResult(true, message.content, message, command, args, calledtype, exactCommand.type)
-            // }
+            return handlers[this.toString()].onDiscordMessage(message)
         }
 
         onConsoleMessage(message: string): CommandResolveResult {
-            return handlers[this.index].onConsoleMessage(message)
-            // var command = this.parseCommand(message)
-            // if (command == undefined) {
-            //     return new CommandResolveResult(false, message, undefined, command, undefined, CommandType.console, undefined)
-            // }
-            // var args = this.parseArguments(message)
+            return handlers[this.toString()].onConsoleMessage(message)
+        }
 
-            // var matchingCommands = this.findCommands(command)
-
-            // if (matchingCommands.length < 1) {
-            //     return new CommandResolveResult(true, message, undefined, command, args, CommandType.console, undefined)
-            // }
-            // else if (matchingCommands.filter(cmd => cmd.type == CommandType.console).length < 1) {
-            //     return new CommandResolveResult(true, message, undefined, command, args, CommandType.console, matchingCommands[0].type)
-            // }
-            // else {
-            //     let exactCommand = matchingCommands.filter(cmd => cmd.type == CommandType.console)[0]
-            //     let callback = exactCommand.callback
-            //     callback.call(this, args)
-            //     return new CommandResolveResult(true, message, undefined, command, args, CommandType.console, exactCommand.type)
-            // }
+        getAllCommands() {
+            return handlers[this.toString()].getAllCommands()
         }
 
         setPrefix(id: string, prefix: string) {
-            handlers[this.index].setPrefix(id, prefix)
-            // var target = this.findData(id)
-            // target.setNewPrefix(prefix)
-            // this.saveData()
+            handlers[this.toString()].setPrefix(id, prefix)
         }
 
-        findPrefix(id: string): string {
-            return handlers[this.index].findPrefix(id)
-            // var target = this.findData(id)
-            // return target.getCurrentPrefix()
+        getPrefix(id: string): string {
+            return handlers[this.toString()].findPrefix(id)
         }
-
-        // findData(id: string) {
-        //     var data = this.data.find(data => data.id == id)
-        //     if (data == undefined) {
-        //         data = new Data(id, this.defaultPrefix)
-        //         this.data.push(data)
-        //         this.saveData()
-        //     }
-        //     return data
-        // }
 
         get defaultPrefix() {
-            return handlers[this.index].defaultPrefix
-            //return this.defaultprefix
+            return handlers[this.toString()].defaultPrefix
         }
 
         set defaultPrefix(prefix) {
-            handlers[this.index].defaultPrefix = prefix
-            // if (prefix.trim().length > 0) {
-            //     this.defaultprefix = prefix
-            // }
+            handlers[this.toString()].defaultPrefix = prefix
         }
 
         registerCommand(name: string, type: CommandType, callback: (...args) => void) {
-            return handlers[this.index].registerCommand(name,type,callback)
-            // name = name.toLowerCase()
-            // Log.reservedCharacters.forEach(char => {
-            //     if (name.includes(char)) {
-            //         return false;
-            //     }
-            // })
-
-            // if (this.findCommands(name, type).length > 0) {
-            //     return false;
-            // }
-
-            // var commands = this.findCommands(name)
-            // if (commands.length > 0) {
-            //     if (type == CommandType.shared) { //replacing server/dm commands with shared type
-            //         commands.forEach(cmd => {
-            //             if (cmd.type != CommandType.console) {
-            //                 this.unregisterCommand(cmd.name, cmd.type)
-            //             }
-            //         })
-            //     }
-            //     else if (commands.filter(cmd => cmd.type == CommandType.shared).length > 0 && type != CommandType.console) { // we already have shared command, why would we register server/dm? (to make different callbacks in DM / on server => use specific command types)
-            //         return false;
-            //     }
-            // }
-
-            // var cmd: ICommand
-            // switch (type) {
-            //     case CommandType.console:
-            //         cmd = new ConsoleCommand(name, callback)
-            //         break;
-
-            //     case CommandType.DM:
-            //         cmd = new DMCommand(name, callback)
-            //         break;
-
-            //     case CommandType.shared:
-            //         cmd = new SharedCommand(name, callback)
-            //         break;
-
-            //     case CommandType.server:
-            //         cmd = new ServerCommand(name, callback)
-            //         break;
-            //     default:
-            //         return false;
-            // }
-            // //@ts-ignore //Could properly make a assignment, but I'm lazy and this looks better even tho analyzer throws error
-            // this.commands.push(cmd)
-            // return true;
+            return handlers[this.toString()].registerCommand(name, type, callback)
         }
 
         unregisterCommand(name: string, type: CommandType) {
-            return handlers[this.index].unregisterCommand(name, type)
-            // var commands = this.findCommands(name, type)
-            // if (commands.length < 1) {
-            //     return false;
-            // }
-            // else {
-            //     this.commands = this.commands.filter((cmd) => {
-            //         return !(cmd.name == name && cmd.type == type)
-            //     })
-            //     return true;
-            // }
-        }
-
-        findCommands(name: string, type?: CommandType) {
-            // if (type === undefined) {
-            //     return this.commands.filter(cmd => cmd.name == name)
-            // }
-            // else {
-            //     return this.commands.filter(cmd => cmd.name == name && cmd.type == type)
-            // }
-            return handlers[this.index].findCommands(name, type)
-        }
-
-        // private parseCommand(command: string | Message): string | undefined {
-        //     if (typeof command == 'string') {
-        //         let cmd = command.split(' ')[0].trim().toLowerCase()
-        //         if (cmd.length < 1) {
-        //             return undefined
-        //         }
-        //         return cmd
-        //     }
-        //     else {
-        //         let prefix = command.guild == undefined ? this.findPrefix(command.author.id) : this.findPrefix(command.guild.id)
-        //         let array = command.content.split(' ')
-        //         if (array.length < 1) {
-        //             return undefined;
-        //         }
-        //         let cmd = array[0]
-
-        //         if (!cmd.startsWith(prefix)) {
-        //             return undefined;
-        //         }
-
-        //         cmd = cmd.replace(prefix, '').trim().toLowerCase()
-        //         if (cmd.length < 1) {
-        //             return undefined
-        //         }
-        //         return cmd
-        //     }
-        // }
-
-        // private parseArguments(msg: string) {
-        //     var args = new Array<string>(0);
-        //     let index = msg.indexOf(' ')
-        //     msg = msg.substr(index).trim();
-
-        //     if (index == -1 || msg.length < 1) {
-        //         return args;
-        //     }
-
-        //     let flag = false;
-        //     let current = ''
-        //     for (let i = 0; i < msg.length; i++) {
-        //         let char = msg[i];
-        //         if (char == '"') {
-        //             if (!flag) {
-        //                 flag = true;
-        //             }
-        //             else {
-        //                 let t = current.trim();
-        //                 if (t != null && t.length > 0) {
-        //                     args.push(t);
-        //                 }
-        //                 flag = false;
-        //                 current = ''
-        //             }
-        //         }
-        //         else if (char.match(/\s+/g) && !flag) {
-        //             let t = current.trim();
-        //             if (t != null && t.length > 0) {
-        //                 args.push(t);
-        //             }
-        //             flag = false;
-        //             current = ''
-        //         }
-        //         else {
-        //             current += char;
-        //         }
-        //     }
-        //     let t = current.trim();
-        //     if (t != null && t.length > 0) {
-        //         args.push(t);
-        //     }
-        //     flag = false;
-        //     current = ''
-        //     return args;
-        // }
-
-        // private loadData() {
-        //     if (!fs.existsSync(datapath)) {
-        //         this.saveData();
-        //     }
-
-        //     let json = fs.readFileSync(datapath, { encoding: 'utf-8', flag: 'r' })
-        //     try {
-        //         let tempdata = JSON.parse(json) as Data[]
-        //         tempdata.forEach((data, index) => {
-        //             this.data[index] = new Data(data.id, data.prefix, data.disabledcommands)
-        //         })
-        //     } catch (ex) {
-        //         this.data = new Array<Data>()
-        //         fs.unlinkSync(datapath)
-        //         this.loadData()
-        //     }
-        // }
-
-        private saveData() {
-            // fs.writeFileSync(datapath, JSON.stringify(this.data, null, '\t'))
-            handlers[this.index].saveData()
+            return handlers[this.toString()].unregisterCommand(name, type)
         }
     }
 

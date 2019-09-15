@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es5",
     "module": "commonjs",
     "declaration": true,
     "declarationMap": true,
@@ -12,8 +12,7 @@
     "noImplicitThis": true,
     "esModuleInterop": true,
     "strictFunctionTypes": false
-    //"experimentalDecorators": true//,
-    //"moduleResolution": "node"
+    //"experimentalDecorators": true,
   },
   "include": ["src"]
 }

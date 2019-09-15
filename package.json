@@ -9,7 +9,8 @@
     "url": "git+https://github.com/2chevskii/discord-bot-helpers.git"
   },
   "scripts": {
-    "build": "tsc -p ."
+    "build": "tsc --build ./tsconfig.json",
+    "build-es6": "tsc --build ./tsconfig-es6.json"
   },
   "keywords": [
     "discord",
