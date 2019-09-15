@@ -5,7 +5,7 @@ import Log from './log'
 export namespace Command {
 
     namespace Command.Internal {
-        export class CommandHandler {
+        export class CommandHandlerInternal {
             data: Data[]
             commands: ICommand[]
             defaultprefix: string
@@ -119,7 +119,7 @@ export namespace Command {
 
             registerCommand(name: string, type: CommandType, callback: (...args) => void) {
                 name = name.toLowerCase()
-                Log.reservedCharacters.forEach(char => {
+                Log.ReservedCharacters.forEach(char => {
                     if (name.includes(char)) {
                         return false;
                     }
@@ -304,7 +304,7 @@ export namespace Command {
 
     const datapath = './commands_data.json'
 
-    const handlers = new Array<Command.Internal.CommandHandler>()
+    const handlers = new Array<Command.Internal.CommandHandlerInternal>()
 
     export interface ICommand {
         name: string;
@@ -355,7 +355,7 @@ export namespace Command {
 
     export class CommandHandler { //works as an API to expose some internal functions
         constructor(defaultprefix: string = '!') {
-            var handler = new Command.Internal.CommandHandler(defaultprefix)
+            var handler = new Command.Internal.CommandHandlerInternal(defaultprefix)
             handlers[this.toString()] = handler
         }
 
