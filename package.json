@@ -1,33 +1,19 @@
 {
-  "name": "discord-bot-helpers",
-  "version": "0.3.6",
-  "description": "Compilation of functions to help writing discord bots",
-  "main": "lib/index.js",
-  "types": "lib/typings",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/2chevskii/discord-bot-helpers.git"
-  },
+  "name": "helper-modules",
+  "version": "0.1.0",
+  "description": "some desc",
+  "main": "distr/index.js",
+  "typings": "distr/typings",
   "scripts": {
-    "build": "tsc --build ./tsconfig.json"
+    "build": "tsc"
   },
-  "keywords": [
-    "discord",
-    "bot",
-    "discord.js",
-    "command",
-    "log",
-    "node",
-    "localization",
-    "language"
-  ],
+  "keywords": [],
   "author": "2CHEVSKII",
   "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^12.7.4",
-    "typescript": "^3.6.2"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "discord.js": "^11.5.1"
+    "@types/node": "^12.7.5",
+    "discord.js": "^11.5.1",
+    "typescript": "^3.6.3"
   }
 }

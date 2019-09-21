@@ -2,17 +2,32 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
+    "moduleResolution": "node",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "outDir": "lib",
-    "declarationDir": "lib/typings",
+    "outDir": "distr",
+    "declarationDir": "distr/typings",
     "strict": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "noImplicitThis": true,
     "esModuleInterop": true,
-    "strictFunctionTypes": false
-    //"experimentalDecorators": true,
+    "strictFunctionTypes": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noEmitOnError": false,
+    "disableSizeLimit": true,
+    "diagnostics": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": false,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": false,
+    "alwaysStrict": true,
+    "noStrictGenericChecks": false,
+    "resolveJsonModule": true
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

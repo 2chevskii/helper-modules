@@ -1,2 +1,8 @@
 node_modules
+helper-modules
+.git
+package-lock.json
+tsconfig.json
+src
+.gitignore
 *.code-workspace
