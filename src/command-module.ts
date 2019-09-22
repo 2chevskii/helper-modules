@@ -3,6 +3,8 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { Log } from './log-module'
 
+//prefix is not saved to file
+
 export namespace Command {
 
     const commanddatafile = `.${path.sep}helper-modules${path.sep}command-module.json`
