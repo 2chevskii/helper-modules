@@ -3,11 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { Log } from './log-module'
 
-<<<<<<< HEAD
-//prefix is not saved to file
-=======
 // DISABLED COMMANDS ARE NOT HANDLED
->>>>>>> bugfix
 
 export namespace Command {
 
