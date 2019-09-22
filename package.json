@@ -6,7 +6,7 @@
   "typings": "distr/typings",
   "scripts": {
     "build": "tsc",
-    "build:docs": "npx typedoc --out docs --readme README.md --tsconfig tsconfig.json --mode modules src"
+    "build:docs": "npx typedoc --out docs --exclude src/index.ts --readme README.md --tsconfig tsconfig.json --mode modules src"
   },
   "keywords": [
     "discord",
