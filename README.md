@@ -2,10 +2,21 @@
 [github]: https://github.com/2chevskii/helper-modules
 [license]: https://www.tldrlegal.com/l/mit
 [discord]: https://discord.gg/DBaqZNZ
+[docs]: https://2chevskii.github.io/helper-modules/
 
 ## <div style="text-align:center; font-style:bold; color:yellow">HELPER MODULES <hr> [![npmjs](https://img.shields.io/npm/v/helper-modules)][npmjs] [![license](https://img.shields.io/github/license/2chevskii/discord-bot-helpers)][license] [![discord](https://discordapp.com/api/guilds/266961601784053781/embed.png)][discord] ![](https://img.shields.io/github/last-commit/2chevskii/discord-bot-helpers?style=flat) <hr> </div>
 
 > Library for handling various things like commands, localization, logging etc.
+
+## Contents
+
+- [Contents](#contents)
+- [Installation](#installation)
+- [Features](#features)
+- [Documentation](#documentation)
+- [Roadmap](#roadmap)
+- [Credits](#credits)
+- [Links](#links)
 
 ## Installation
 
@@ -28,6 +39,9 @@
 
 > Latest buildable version of package will always be located in 'develop' branch, 'master' is for stable and fully tested versions
 
+## Documentation
+
+Autogenrated documentation for this project [located here][docs]
 
 ## Roadmap
 
@@ -50,3 +64,4 @@
 * [NPMJS]
 * [Discord]
 * [MIT LICENSE][license]
+* [Documentation][docs]
