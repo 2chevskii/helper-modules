@@ -6,18 +6,8 @@ import * as path from 'path'
  */
 export namespace Log {
 
-    /**
-     * @type {string}
-     * @constant
-     * @memberof Log
-     */
     const logFolder = `.${path.sep}helper-modules${path.sep}logs`
 
-    /**
-     * @type {string}
-     * @constant
-     * @memberof Log
-     */
     const defaultprefix = 'log'
 
     /**
@@ -112,92 +102,34 @@ export namespace Log {
         return LogInternal.Instance.logToFile(data, filepath)
     }
 
-    /**
-     * Reperesent object which contains a log entry.
-     * @interface LogMessage
-     * @memberof Log
-     */
     interface LogMessage {
-        /**
-         * @type {LogType}
-         * @memberof Log.LogMessage
-         */
         type: LogType
-        /**
-         * @type {(string | undefined)}
-         * @memberof Log.LogMessage
-         */
         message: string | undefined
-        /**
-         * @type {(Log.Utility.TimeStamp | undefined)}
-         * @memberof Log.LogMessage
-         */
         time: Log.Utility.TimeStamp | undefined
-        /**
-         * @type {boolean}
-         * @memberof Log.LogMessage
-         */
         toFile: boolean
-        /**
-         * @type {boolean}
-         * @memberof Log.LogMessage
-         */
         toConsole: boolean
     }
 
-    
-    /**
-     * Basically represents the color (default / yellow / red) or the prefix ([WARNING]/[ERROR]) of the log.
-     * @enum {string}
-     * @memberof Log
-     */
     enum LogType {
         Default = 'default',
         Warning = 'warning',
         Error = 'error'
     }
 
-
-    /**
-     * Internal class to hide methods not intended to be exported.
-     * @class LogInternal
-     * @memberof Log
-     */
     class LogInternal {
         private file: string
         private lastLog: Array<LogMessage>
         private static _instance: LogInternal
 
-        /**
-         * Creates an instance of LogInternal.
-         * @constructor
-         * @param {string} file Prefix for logfile path
-         * @memberof Log.LogInternal
-         */
         public constructor(file: string) {
             this.file = file
             this.lastLog = new Array<LogMessage>()
         }
 
-        /**
-         * Sets new prefix for the logfile.
-         * @method
-         * @public
-         * @param {string} prefix New prefix literal
-         * @memberof Log.LogInternal
-         */
         public setFilePrefix(prefix: string): void {
             this.file = prefix
         }
 
-        /**
-         * Returns last log entries.
-         * @method
-         * @public
-         * @param {number} count Maximum count of log entries
-         * @returns {Array<LogMessage>} Log entry array
-         * @memberof Log.LogInternal
-         */
         public showLastLog(count: number): Array<LogMessage> {
             var array = new Array<LogMessage>(0)
             var i = 0
@@ -210,63 +142,18 @@ export namespace Log {
             return array
         }
 
-        /**
-         * Write log with default console color.
-         * @method
-         * @public
-         * @param {*} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown*
-         * @param {boolean} timestamp the function should attach a timestamp (`[hour:min:sec]`) in front of the log message. (`true` by default)
-         * @param {boolean} toConsole the function should print log entry into `stdin`. (`true` by default)
-         * @param {boolean} toFile Whether the function should save this log into default logfile. (`true` by default)
-         * @returns {LogMessage} Composed `LogMessage` object.
-         * @memberof Log.LogInternal
-         */
         public log(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
             return this.logColored(data, LogType.Default, timestamp, toConsole, toFile)
         }
 
-
-        /**
-         * Write log highlighted in yellow.
-         * @method
-         * @public
-         * @param {*} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown*
-         * @param {boolean} timestamp the function should attach a timestamp (`[hour:min:sec]`) in front of the log message. (`true` by default)
-         * @param {boolean} toConsole the function should print log entry into `stdin`. (`true` by default)
-         * @param {boolean} toFile Whether the function should save this log into default logfile. (`true` by default)
-         * @returns {LogMessage} Composed `LogMessage` object
-         * @memberof Log.LogInternal
-         */
         public logWarning(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
             return this.logColored(data, LogType.Warning, timestamp, toConsole, toFile)
         }
 
-
-        /**
-         * Write log highlighted in red.
-         * @method
-         * @public
-         * @param {*} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown*
-         * @param {boolean} timestamp the function should attach a timestamp (`[hour:min:sec]`) in front of the log message. (`true` by default)
-         * @param {boolean} toConsole the function should print log entry into `stdin`. (`true` by default)
-         * @param {boolean} toFile Whether the function should save this log into default logfile. (`true` by default)
-         * @returns {LogMessage} Composed `LogMessage` object.
-         * @memberof Log.LogInternal
-         */
         public logError(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
             return this.logColored(data, LogType.Error, timestamp, toConsole, toFile)
         }
 
-        /**
-         * Writes data to the specified file.
-         * @method
-         * @public
-         * @async
-         * @param {string} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown*
-         * @param {string} filepath Path to the file. *If it is somehow incorrect, promise will return an error message*
-         * @returns {Promise<string>} Promise with message about successfullness of the operation
-         * @memberof Log.LogInternal
-         */
         public async logToFile(data: string, filepath: string): Promise<string> {
             return new Promise((resolve, reject) => {
                 try {
@@ -288,18 +175,6 @@ export namespace Log {
             })
         }
 
-        /**
-         * Composes new log entry and performs actions (print to console / write to file) with it.
-         * @method
-         * @private
-         * @param {*} data Any object which has a `toString()` method
-         * @param {LogType} type Type of the log entry
-         * @param {boolean} timestamp Current time
-         * @param {boolean} toConsole Should log entry be printed to console
-         * @param {boolean} toFile Should log entry be written to file
-         * @returns {LogMessage} Composed log entry
-         * @memberof Log.LogInternal
-         */
         private logColored(data: any, type: LogType, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
             var ts = timestamp ? new Log.Utility.TimeStamp() : undefined
             var string: string | undefined = data === undefined ? undefined : data.toString()
@@ -322,13 +197,6 @@ export namespace Log {
             return message
         }
 
-        /**
-         * Prints colored message to console.
-         * @method
-         * @private
-         * @param {LogMessage} message Message to print
-         * @memberof Log.LogInternal
-         */
         private writeColored(message: LogMessage): void {
             var msg = message.message === undefined ? 'undefined' : message.message
             switch (message.type) {
@@ -346,13 +214,6 @@ export namespace Log {
             process.stdout.write(msg + '\n', 'utf-8', (ex) => { if (ex != null) { this.logError(ex, true, true, true) } })
         }
 
-        /**
-         * Saves given `LogMessage` object to the default logfile.
-         * @method
-         * @private
-         * @param {LogMessage} message Message object that needs to be saved
-         * @memberof Log.LogInternal
-         */
         private writeFile(message: LogMessage): void {
             var msg = message.message === undefined ? 'undefined' : message.message
             switch (message.type) {
@@ -370,26 +231,11 @@ export namespace Log {
             this.logToFile(msg, this.logFileName).catch(ex => this.logError(ex, true, true, false))
         }
 
-        /**
-         * Returns path to the logfile for the current date.
-         * @private
-         * @property
-         * @returns {string} Name
-         * @memberof Log.LogInternal
-         */
         private get logFileName(): string {
             var ts = new Log.Utility.TimeStamp()
             return path.join(logFolder, this.file + '_' + ts.day + '_' + ts.month + '_' + ts.year + '.log')
         }
 
-        /**
-         * Ensures that object exists before accessing it's members.
-         * @public
-         * @static
-         * @property
-         * @returns {LogInternal} LogInternal object
-         * @memberof Log.LogInternal
-         */
         public static get Instance(): LogInternal {
             if (LogInternal._instance === undefined) {
                 LogInternal._instance = new LogInternal(defaultprefix)
@@ -405,12 +251,6 @@ export namespace Log {
  */
 export namespace Log.Utility {
 
-    /**
-     * These characters could not be used in filepaths to avoid problems (internal).
-     * @type {string[]}
-     * @constant
-     * @memberof Log.Utility
-     */
     const _reservedCharacters = ["'", '"', '?', ':', '/', '\\', '>', '<', '*', '%', '|', ' ', '.', ',']
 
     /**
