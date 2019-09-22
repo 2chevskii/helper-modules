@@ -8,91 +8,98 @@ export namespace Log {
     const defaultprefix = 'log'
 
     /**
-     *
+     * Set new prefix for the log file. Note that prefix cannot contain certain characters (listed in `Log.Utility.reservedCharacters`).
      *
      * @export
-     * @param {string} newprefix
-     * @returns {boolean}
+     * @param {string} prefix New log file prefix.
+     * @returns {boolean} Whether new prefix is set or not.
      */
-    export function setPrefix(newprefix: string): boolean {
-        for (let i = 0; i < newprefix.length; i++) {
-            const char = newprefix[i]
+    export function setPrefix(prefix: string): boolean {
+        for (let i = 0; i < prefix.length; i++) {
+            const char = prefix[i]
             if (Log.Utility.reservedCharacters.includes(char)) {
                 return false
             }
         }
-        LogInternal.Instance.setFilePrefix(newprefix)
+        LogInternal.Instance.setFilePrefix(prefix)
         return true
     }
 
     /**
-     *
-     *
+     * Get last log entries.
+     * 
+     * *Importnant:* This function works only with log of current session (stored in memory). It won't ever return values from previous sessions (even if they are saved into file).
      * @export
-     * @param {number} [count=10]
-     * @returns {LogMessage[]}
+     * @param {number} [count=10] Maximum count of log entries you want to get. Real given amount might be less than this number.
+     * @returns {LogMessage[]} Array with log messages. *Could be 0 length but never `undefined/null`*
      */
     export function showLastLog(count: number = 10): LogMessage[] {
         return LogInternal.Instance.showLastLog(count)
     }
 
     /**
-     *
+     * Write log with default console color.
      *
      * @export
-     * @param {*} data
-     * @param {boolean} [timestamp=true]
-     * @param {boolean} [toConsole=true]
-     * @param {boolean} [toFile=true]
-     * @returns {LogMessage}
+     * @param {*} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown.*
+     * @param {boolean} [timestamp=true] Whether the function should attach a timestamp (`[hour:min:sec]`) in front of the log message. (`true` by default)
+     * @param {boolean} [toConsole=true] Whether the function should print log entry into `stdin`. (`true` by default)
+     * @param {boolean} [toFile=true] Whether the function should save this log into default logfile. (`true` by default)
+     * @returns {LogMessage} Composed `LogMessage` object.
      */
     export function log(data: any, timestamp: boolean = true, toConsole: boolean = true, toFile: boolean = true): LogMessage {
         return LogInternal.Instance.log(data, timestamp, toConsole, toFile)
     }
 
     /**
-     *
+     * Write log highlighted in yellow.
      *
      * @export
-     * @param {*} data
-     * @param {boolean} [timestamp=true]
-     * @param {boolean} [toConsole=true]
-     * @param {boolean} [toFile=true]
-     * @returns {LogMessage}
+     * @param {*} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown.*
+     * @param {boolean} [timestamp=true] Whether the function should attach a timestamp (`[hour:min:sec]`) in front of the log message. (`true` by default)
+     * @param {boolean} [toConsole=true] Whether the function should print log entry into `stdin`. (`true` by default)
+     * @param {boolean} [toFile=true] Whether the function should save this log into default logfile. (`true` by default)
+     * @returns {LogMessage} Composed `LogMessage` object.
      */
     export function logWarning(data: any, timestamp: boolean = true, toConsole: boolean = true, toFile: boolean = true): LogMessage {
         return LogInternal.Instance.logWarning(data, timestamp, toConsole, toFile)
     }
 
     /**
-     *
+     * Write log highlighted in red.
      *
      * @export
-     * @param {*} data
-     * @param {boolean} [timestamp=true]
-     * @param {boolean} [toConsole=true]
-     * @param {boolean} [toFile=true]
-     * @returns {LogMessage}
+     * @param {*} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown.*
+     * @param {boolean} [timestamp=true] Whether the function should attach a timestamp (`[hour:min:sec]`) in front of the log message. (`true` by default)
+     * @param {boolean} [toConsole=true] Whether the function should print log entry into `stdin`. (`true` by default)
+     * @param {boolean} [toFile=true] Whether the function should save this log into default logfile. (`true` by default)
+     * @returns {LogMessage} Composed `LogMessage` object.
      */
     export function logError(data: any, timestamp: boolean = true, toConsole: boolean = true, toFile: boolean = true): LogMessage {
         return LogInternal.Instance.logError(data, timestamp, toConsole, toFile)
     }
 
     /**
-     *
-     *
+     * Writes data to the specified file.
+     * @async
      * @export
-     * @param {string} data
-     * @param {string} filepath
-     * @returns {Promise<string>}
+     * @param {string} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown.*
+     * @param {string} filepath Path to the file. *If it is somehow incorrect, promise will return an error message.*
+     * @returns {Promise<string>} Promise with message about successfullness of the operation.
      */
     export async function logToFile(data: string, filepath: string): Promise<string> {
         return LogInternal.Instance.logToFile(data, filepath)
     }
 
     /**
+     * Reperesent object which contains a log entry.
      *
-     *
+     * Properties:
+     * * type: `LogType`
+     * * message: `string | undefined`
+     * * time: `Log.Utility.TimeStamp | undefined`
+     * * toFile: `boolean`
+     * * toConsole: `boolean`
      * @interface LogMessage
      */
     interface LogMessage {
@@ -104,7 +111,7 @@ export namespace Log {
     }
 
     /**
-     *
+     * Basically represents the color (`default` / `yellow` / `red`) or the prefix (`[WARNING]`/`[ERROR]`) of the log.
      *
      * @enum {number}
      */
@@ -116,8 +123,30 @@ export namespace Log {
 
 
     /**
-     *
-     *
+     * Internal class to hide methods not intended to be exported.
+     * 
+     * Constructor:
+     * * `public` `constructor(file: string)`
+     * 
+     * Properties:
+     * * file: `string`
+     * * lastLog: `Array<LogMessage>`
+     * 
+     * Static Properties:
+     * * _instance: `LogInternal`
+     * 
+     * Methods:
+     * * setFilePrefix(newprefix: string): `void`
+     * * `public` showLastLog(count: number): `Array<LogMessage>`
+     * * `public` log(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): `LogMessage`
+     * * `public` logWarning(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): `LogMessage`
+     * * `public` logError(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): `LogMessage`
+     * * `public` `async` logToFile(data: string, filepath: string): `Promise<string>`
+     * * `private` logColored(data: any, type: LogType, timestamp: boolean, toConsole: boolean, toFile: boolean): `LogMessage`
+     * * `private` writeColored(message: LogMessage): `void`
+     * * `private` writeFile(message: LogMessage): `void`
+     * * `private` `get` logFileName(): `string`
+     * * `public` `static` `get` Instance(): `LogInternal`
      * @class LogInternal
      */
     class LogInternal {
@@ -126,7 +155,7 @@ export namespace Log {
         private static _instance: LogInternal
 
         /**
-         *Creates an instance of LogInternal.
+         * Creates an instance of LogInternal.
          * @param {string} file
          * @memberof LogInternal
          */
@@ -136,20 +165,20 @@ export namespace Log {
         }
 
         /**
+         * Sets new prefix for the logfile.
          *
-         *
-         * @param {string} newprefix
+         * @param {string} prefix New prefix literal.
          * @memberof LogInternal
          */
-        public setFilePrefix(newprefix: string) {
-            this.file = newprefix
+        public setFilePrefix(prefix: string): void {
+            this.file = prefix
         }
 
         /**
+         * Returns last log entries.
          *
-         *
-         * @param {number} count
-         * @returns {Array<LogMessage>}
+         * @param {number} count Maximum count of log entries.
+         * @returns {Array<LogMessage>} Log entry array.
          * @memberof LogInternal
          */
         public showLastLog(count: number): Array<LogMessage> {
@@ -165,13 +194,13 @@ export namespace Log {
         }
 
         /**
+         * Write log with default console color.
          *
-         *
-         * @param {*} data
-         * @param {boolean} timestamp
-         * @param {boolean} toConsole
-         * @param {boolean} toFile
-         * @returns {LogMessage}
+         * @param {*} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown.*
+         * @param {boolean} timestamp the function should attach a timestamp (`[hour:min:sec]`) in front of the log message. (`true` by default)
+         * @param {boolean} toConsole the function should print log entry into `stdin`. (`true` by default)
+         * @param {boolean} toFile Whether the function should save this log into default logfile. (`true` by default)
+         * @returns {LogMessage} Composed `LogMessage` object.
          * @memberof LogInternal
          */
         public log(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
@@ -180,13 +209,13 @@ export namespace Log {
 
 
         /**
+         * Write log highlighted in yellow.
          *
-         *
-         * @param {*} data
-         * @param {boolean} timestamp
-         * @param {boolean} toConsole
-         * @param {boolean} toFile
-         * @returns {LogMessage}
+         * @param {*} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown.*
+         * @param {boolean} timestamp the function should attach a timestamp (`[hour:min:sec]`) in front of the log message. (`true` by default)
+         * @param {boolean} toConsole the function should print log entry into `stdin`. (`true` by default)
+         * @param {boolean} toFile Whether the function should save this log into default logfile. (`true` by default)
+         * @returns {LogMessage} Composed `LogMessage` object.
          * @memberof LogInternal
          */
         public logWarning(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
@@ -195,13 +224,13 @@ export namespace Log {
 
 
         /**
+         * Write log highlighted in red.
          *
-         *
-         * @param {*} data
-         * @param {boolean} timestamp
-         * @param {boolean} toConsole
-         * @param {boolean} toFile
-         * @returns {LogMessage}
+         * @param {*} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown.*
+         * @param {boolean} timestamp the function should attach a timestamp (`[hour:min:sec]`) in front of the log message. (`true` by default)
+         * @param {boolean} toConsole the function should print log entry into `stdin`. (`true` by default)
+         * @param {boolean} toFile Whether the function should save this log into default logfile. (`true` by default)
+         * @returns {LogMessage} Composed `LogMessage` object.
          * @memberof LogInternal
          */
         public logError(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
@@ -209,11 +238,12 @@ export namespace Log {
         }
 
         /**
+         * Writes data to the specified file.
          * 
-         *
-         * @param {string} data
-         * @param {string} filepath
-         * @returns {Promise<string>}
+         * @async
+         * @param {string} data Object to log. *Note that function should be able to cast this value to a string, if it can not, an exception will be thrown.*
+         * @param {string} filepath Path to the file. *If it is somehow incorrect, promise will return an error message.*
+         * @returns {Promise<string>} Promise with message about successfullness of the operation.
          * @memberof LogInternal
          */
         public async logToFile(data: string, filepath: string): Promise<string> {
@@ -278,7 +308,7 @@ export namespace Log {
          * @param {LogMessage} message Message to print.
          * @memberof LogInternal
          */
-        private writeColored(message: LogMessage) {
+        private writeColored(message: LogMessage): void {
             var msg = message.message === undefined ? 'undefined' : message.message
             switch (message.type) {
                 case LogType.Warning:
@@ -302,7 +332,7 @@ export namespace Log {
          * @param {LogMessage} message Message object that needs to be saved.
          * @memberof LogInternal
          */
-        private writeFile(message: LogMessage):void {
+        private writeFile(message: LogMessage): void {
             var msg = message.message === undefined ? 'undefined' : message.message
             switch (message.type) {
                 case LogType.Warning:
@@ -325,6 +355,7 @@ export namespace Log {
          * @readonly
          * @private
          * @type {string} Logfile path.
+         * @returns {string} Name.
          * @memberof LogInternal
          */
         private get logFileName(): string {
@@ -337,9 +368,10 @@ export namespace Log {
          *
          * @readonly
          * @static
+         * @returns {LogInternal} LogInternal object.
          * @memberof LogInternal
          */
-        public static get Instance() {
+        public static get Instance(): LogInternal {
             if (LogInternal._instance === undefined) {
                 LogInternal._instance = new LogInternal(defaultprefix)
             }
@@ -367,11 +399,14 @@ export namespace Log.Utility {
      * * minute:`number`
      * * second:`number`
      * 
+     * Constructor:
+     * * `public` constructor()
+     * 
      * Methods:
-     * * toString():`string`
+     * * `public` toString(): `string`
      * 
      * Static methods:
-     * * toString(`TimeStamp`):`string`
+     * * `public` `static` toString(timestamp: TimeStamp): `string`
      */
     export class TimeStamp {
         public readonly day: number
