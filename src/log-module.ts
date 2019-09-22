@@ -2,7 +2,6 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 /**
- * Contains definitions for logging information.
  * @namespace {Log} Log
  */
 export namespace Log {
@@ -374,6 +373,7 @@ export namespace Log {
         /**
          * Returns path to the logfile for the current date.
          * @private
+         * @property
          * @returns {string} Name
          * @memberof Log.LogInternal
          */
@@ -386,6 +386,7 @@ export namespace Log {
          * Ensures that object exists before accessing it's members.
          * @public
          * @static
+         * @property
          * @returns {LogInternal} LogInternal object
          * @memberof Log.LogInternal
          */
