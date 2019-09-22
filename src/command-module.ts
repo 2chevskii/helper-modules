@@ -107,7 +107,7 @@ export namespace Command {
      * Get callback(s) for specifies command name.
      * @export
      * @param {string} cmd Command name
-     * @returns {(ICommand['callback'] | { type: Command.Utility.CommandType, callback: ICommand['callback'] }[] | undefined)}
+     * @returns {object | object[] | undefined} *object represents ICommand['callback'] | object[] represents { type: Command.Utility.CommandType, callback: ICommand['callback'] }[]*
      * @memberof Command
      */
     export function getCallback(cmd: string): ICommand['callback'] | { type: Command.Utility.CommandType, callback: ICommand['callback'] }[] | undefined {
@@ -120,7 +120,7 @@ export namespace Command {
      * @function
      * @param {string} cmd Command name
      * @param {(Command.Utility.CommandType.DM | Command.Utility.CommandType.server | Command.Utility.CommandType.shared)} type Command type
-     * @param {DiscordCommand['callback']} callback Command callback
+     * @param {object} callback Command callback. *object represents DiscordCommand['callback']*
      * @returns {boolean}
      * @memberof Command
      */
@@ -130,7 +130,7 @@ export namespace Command {
      * @function
      * @param {string} cmd
      * @param {Command.Utility.CommandType.console} type
-     * @param {ConsoleCommand['callback']} callback
+     * @param {object} callback *object represents ConsoleCommand['callback']*
      * @returns {boolean}
      */
     export function registerCommand(cmd: string, type: Command.Utility.CommandType.console, callback: ConsoleCommand['callback']): boolean
@@ -139,7 +139,7 @@ export namespace Command {
      * @function
      * @param {string} cmd
      * @param {Command.Utility.CommandType} type
-     * @param {ICommand['callback']} callback
+     * @param {object} callback *object represents ICommand['callback']*
      * @returns {boolean}
      */
     export function registerCommand(cmd: string, type: Command.Utility.CommandType, callback: ICommand['callback']): boolean {
@@ -701,62 +701,62 @@ export namespace Command.Utility {
          * @public
          * @readonly
          * @type {boolean}
-         * @memberof Command.UtilityCommandResolveResult
+         * @memberof Command.Utility.CommandResolveResult
          */
         public readonly isCommand: boolean
         /**
          * @public
          * @readonly
          * @type {T}
-         * @memberof Command.UtilityCommandResolveResult
+         * @memberof Command.Utility.CommandResolveResult
          */
         public readonly message: T
         /**
          * @public
          * @readonly
-         * @type {(undefined | string)}
-         * @memberof Command.UtilityCommandResolveResult
+         * @type {undefined | string}
+         * @memberof Command.Utility.CommandResolveResult
          */
         public readonly cmd: undefined | string
         /**
          * @public
          * @readonly
-         * @type {(undefined | string[])}
-         * @memberof Command.UtilityCommandResolveResult
+         * @type {undefined | string[]}
+         * @memberof Command.Utility.CommandResolveResult
          */
         public readonly args: undefined | string[]
         /**
          * @public
          * @readonly
          * @type {number}
-         * @memberof Command.UtilityCommandResolveResult
+         * @memberof Command.Utility.CommandResolveResult
          */
         public readonly argsCount: number
         /**
          * @public
          * @readonly
          * @type {boolean}
-         * @memberof Command.UtilityCommandResolveResult
+         * @memberof Command.Utility.CommandResolveResult
          */
         public readonly wasExecuted: boolean
         /**
          * @public
          * @readonly
          * @type {CommandType}
-         * @memberof Command.UtilityCommandResolveResult
+         * @memberof Command.Utility.CommandResolveResult
          */
         public readonly calledIn: CommandType
         /**
          * @public
          * @readonly
-         * @type {(undefined | CommandType)}
-         * @memberof Command.UtilityCommandResolveResult
+         * @type {undefined | CommandType}
+         * @memberof Command.Utility.CommandResolveResult
          */
         public readonly nativeType: undefined | CommandType
         /**
          * @public
          * @readonly
-         * @type {undefined | ((...args: any[]) => any)}
+         * @type {undefined | Function} *Function represents (...args: any[]) => any*
          * @memberof Command.UtilityCommandResolveResult
          */
         public readonly callback: undefined | ((...args: any[]) => any)
@@ -764,7 +764,7 @@ export namespace Command.Utility {
          * @public
          * @readonly
          * @type {*}
-         * @memberof Command.UtilityCommandResolveResult
+         * @memberof Command.Utility.CommandResolveResult
          */
         public readonly executeResult: any
 
@@ -779,9 +779,9 @@ export namespace Command.Utility {
          * @param {string} [cmd]
          * @param {string[]} [args]
          * @param {CommandType} [nativeType]
-         * @param {(...args: any[]) => any} [callback]
+         * @param {Function} [callback] *Function represents (...args: any[]) => any*
          * @param {*} [execResult]
-         * @memberof Command.UtilityCommandResolveResult
+         * @memberof Command.Utility.CommandResolveResult
          */
         public constructor(isCommand: boolean, message: T, calledIn: CommandType, wasExecuted: boolean, cmd?: string, args?: string[], nativeType?: CommandType, callback?: (...args: any[]) => any, execResult?: any) {
             this.isCommand = isCommand

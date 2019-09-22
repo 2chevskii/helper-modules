@@ -316,6 +316,7 @@ export namespace Log.Utility {
          * Creates an instance of TimeStamp.
          * @public
          * @constructor
+         * @type {Log.Utility.TimeStamp}
          * @memberof Log.Utility.TimeStamp
          */
         public constructor() {
@@ -332,7 +333,7 @@ export namespace Log.Utility {
          * Get string representation of a timestamp.
          * @method
          * @public
-         * @returns {string} Timecode in form `[hour:minute:second]`
+         * @returns {string} Timecode in form [hour:minute:second]
          * @memberof Log.Utility.TimeStamp
          */
         public toString(): string {
@@ -345,7 +346,7 @@ export namespace Log.Utility {
          * @public
          * @static
          * @param {TimeStamp} timestamp Input timestamp object
-         * @returns {string} Timecode in form `[hour:minute:second]`
+         * @returns {string} Timecode in form [hour:minute:second]
          * @memberof Log.Utility.TimeStamp
          */
         public static toString(timestamp: TimeStamp): string {
