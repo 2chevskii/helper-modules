@@ -6,3 +6,4 @@ src
 .gitignore
 *.code-workspace
 package-lock.json
+out

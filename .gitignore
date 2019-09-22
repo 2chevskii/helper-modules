@@ -3,3 +3,4 @@ package-lock.json
 distr
 *.zip
 *.tgz
+out
