@@ -103,15 +103,39 @@ export namespace Log {
 
     /**
      * Reperesent object which contains a log entry.
-     *
      * @interface LogMessage
      * @memberof Log
      */
     interface LogMessage {
+
+        /**
+         * @type {LogType}
+         * @memberof Log.LogMessage
+         */
         type: LogType
+
+        /**
+         * @type {(string | undefined)}
+         * @memberof Log.LogMessage
+         */
         message: string | undefined
+
+        /**
+         * @type {(Log.Utility.TimeStamp | undefined)}
+         * @memberof Log.LogMessage
+         */
         time: Log.Utility.TimeStamp | undefined
+
+        /**
+         * @type {boolean}
+         * @memberof Log.LogMessage
+         */
         toFile: boolean
+
+        /**
+         * @type {boolean}
+         * @memberof Log.LogMessage
+         */
         toConsole: boolean
     }
 
