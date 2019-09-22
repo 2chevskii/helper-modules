@@ -224,7 +224,12 @@ export namespace Command {
         }
 
         setPrefix(id: string, prefix: string) {
-            return this.getData(id).setPrefix(prefix)
+            let res = this.getData(id).setPrefix(prefix);
+            if (res) {
+                fs.mkdirSync(path.dirname(commanddatafile), { recursive: true })
+                fs.writeFileSync(commanddatafile, JSON.stringify(this.data))
+            }
+            return res
         }
 
         isCommandDisabled(id: string, name: string): boolean {
