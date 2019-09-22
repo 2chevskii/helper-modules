@@ -7,6 +7,13 @@ export namespace Log {
 
     const defaultprefix = 'log'
 
+    /**
+     *
+     *
+     * @export
+     * @param {string} newprefix
+     * @returns {boolean}
+     */
     export function setPrefix(newprefix: string): boolean {
         for (let i = 0; i < newprefix.length; i++) {
             const char = newprefix[i]
@@ -18,25 +25,76 @@ export namespace Log {
         return true
     }
 
+    /**
+     *
+     *
+     * @export
+     * @param {number} [count=10]
+     * @returns {LogMessage[]}
+     */
     export function showLastLog(count: number = 10): LogMessage[] {
         return LogInternal.Instance.showLastLog(count)
     }
 
+    /**
+     *
+     *
+     * @export
+     * @param {*} data
+     * @param {boolean} [timestamp=true]
+     * @param {boolean} [toConsole=true]
+     * @param {boolean} [toFile=true]
+     * @returns {LogMessage}
+     */
     export function log(data: any, timestamp: boolean = true, toConsole: boolean = true, toFile: boolean = true): LogMessage {
         return LogInternal.Instance.log(data, timestamp, toConsole, toFile)
     }
 
+    /**
+     *
+     *
+     * @export
+     * @param {*} data
+     * @param {boolean} [timestamp=true]
+     * @param {boolean} [toConsole=true]
+     * @param {boolean} [toFile=true]
+     * @returns {LogMessage}
+     */
     export function logWarning(data: any, timestamp: boolean = true, toConsole: boolean = true, toFile: boolean = true): LogMessage {
         return LogInternal.Instance.logWarning(data, timestamp, toConsole, toFile)
     }
+
+    /**
+     *
+     *
+     * @export
+     * @param {*} data
+     * @param {boolean} [timestamp=true]
+     * @param {boolean} [toConsole=true]
+     * @param {boolean} [toFile=true]
+     * @returns {LogMessage}
+     */
     export function logError(data: any, timestamp: boolean = true, toConsole: boolean = true, toFile: boolean = true): LogMessage {
         return LogInternal.Instance.logError(data, timestamp, toConsole, toFile)
     }
 
+    /**
+     *
+     *
+     * @export
+     * @param {string} data
+     * @param {string} filepath
+     * @returns {Promise<string>}
+     */
     export async function logToFile(data: string, filepath: string): Promise<string> {
         return LogInternal.Instance.logToFile(data, filepath)
     }
 
+    /**
+     *
+     *
+     * @interface LogMessage
+     */
     interface LogMessage {
         type: LogType
         message: string | undefined
@@ -45,26 +103,56 @@ export namespace Log {
         toConsole: boolean
     }
 
+    /**
+     *
+     *
+     * @enum {number}
+     */
     enum LogType {
         Default,
         Warning,
         Error
     }
 
+
+    /**
+     *
+     *
+     * @class LogInternal
+     */
     class LogInternal {
         private file: string
         private lastLog: Array<LogMessage>
         private static _instance: LogInternal
-        constructor(file: string) {
+
+        /**
+         *Creates an instance of LogInternal.
+         * @param {string} file
+         * @memberof LogInternal
+         */
+        public constructor(file: string) {
             this.file = file
             this.lastLog = new Array<LogMessage>()
         }
 
-        setFilePrefix(newprefix: string) {
+        /**
+         *
+         *
+         * @param {string} newprefix
+         * @memberof LogInternal
+         */
+        public setFilePrefix(newprefix: string) {
             this.file = newprefix
         }
 
-        showLastLog(count: number): Array<LogMessage> {
+        /**
+         *
+         *
+         * @param {number} count
+         * @returns {Array<LogMessage>}
+         * @memberof LogInternal
+         */
+        public showLastLog(count: number): Array<LogMessage> {
             var array = new Array<LogMessage>(0)
             var i = 0
             this.lastLog.reverse().forEach(msg => {
@@ -76,19 +164,59 @@ export namespace Log {
             return array
         }
 
-        log(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
+        /**
+         *
+         *
+         * @param {*} data
+         * @param {boolean} timestamp
+         * @param {boolean} toConsole
+         * @param {boolean} toFile
+         * @returns {LogMessage}
+         * @memberof LogInternal
+         */
+        public log(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
             return this.logColored(data, LogType.Default, timestamp, toConsole, toFile)
         }
 
-        logWarning(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
+
+        /**
+         *
+         *
+         * @param {*} data
+         * @param {boolean} timestamp
+         * @param {boolean} toConsole
+         * @param {boolean} toFile
+         * @returns {LogMessage}
+         * @memberof LogInternal
+         */
+        public logWarning(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
             return this.logColored(data, LogType.Warning, timestamp, toConsole, toFile)
         }
 
-        logError(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
+
+        /**
+         *
+         *
+         * @param {*} data
+         * @param {boolean} timestamp
+         * @param {boolean} toConsole
+         * @param {boolean} toFile
+         * @returns {LogMessage}
+         * @memberof LogInternal
+         */
+        public logError(data: any, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
             return this.logColored(data, LogType.Error, timestamp, toConsole, toFile)
         }
 
-        async logToFile(data: string, filepath: string): Promise<string> {
+        /**
+         * 
+         *
+         * @param {string} data
+         * @param {string} filepath
+         * @returns {Promise<string>}
+         * @memberof LogInternal
+         */
+        public async logToFile(data: string, filepath: string): Promise<string> {
             return new Promise((resolve, reject) => {
                 try {
                     var dir = path.dirname(filepath)
@@ -109,6 +237,18 @@ export namespace Log {
             })
         }
 
+        /**
+         * Composes new log entry and performs actions (print to console / write to file) with it.
+         *
+         * @private
+         * @param {*} data Any object which has a `toString()` method.
+         * @param {LogType} type Type of the log entry.
+         * @param {boolean} timestamp Current time.
+         * @param {boolean} toConsole Should log entry be printed to console?
+         * @param {boolean} toFile Should log entry be written to file?
+         * @returns {LogMessage} Composed log entry.
+         * @memberof LogInternal
+         */
         private logColored(data: any, type: LogType, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
             var ts = timestamp ? new Log.Utility.TimeStamp() : undefined
             var string: string | undefined = data === undefined ? undefined : data.toString()
@@ -131,6 +271,13 @@ export namespace Log {
             return message
         }
 
+        /**
+         * Prints colored message to console.
+         *
+         * @private
+         * @param {LogMessage} message Message to print.
+         * @memberof LogInternal
+         */
         private writeColored(message: LogMessage) {
             var msg = message.message === undefined ? 'undefined' : message.message
             switch (message.type) {
@@ -148,7 +295,14 @@ export namespace Log {
             process.stdout.write(msg + '\n', 'utf-8', (ex) => { if (ex != null) { this.logError(ex, true, true, true) } })
         }
 
-        private writeFile(message: LogMessage) {
+        /**
+         * Saves given `LogMessage` object to the default logfile.
+         *
+         * @private
+         * @param {LogMessage} message Message object that needs to be saved.
+         * @memberof LogInternal
+         */
+        private writeFile(message: LogMessage):void {
             var msg = message.message === undefined ? 'undefined' : message.message
             switch (message.type) {
                 case LogType.Warning:
@@ -165,12 +319,27 @@ export namespace Log {
             this.logToFile(msg, this.logFileName).catch(ex => this.logError(ex, true, true, false))
         }
 
+        /**
+         * Returns path to the logfile for the current date.
+         *
+         * @readonly
+         * @private
+         * @type {string} Logfile path.
+         * @memberof LogInternal
+         */
         private get logFileName(): string {
             var ts = new Log.Utility.TimeStamp()
             return path.join(logFolder, this.file + '_' + ts.day + '_' + ts.month + '_' + ts.year + '.log')
         }
 
-        static get Instance() {
+        /**
+         * Ensures that `LangInternal` object exists before accessing it's members.
+         *
+         * @readonly
+         * @static
+         * @memberof LogInternal
+         */
+        public static get Instance() {
             if (LogInternal._instance === undefined) {
                 LogInternal._instance = new LogInternal(defaultprefix)
             }
@@ -183,16 +352,40 @@ export namespace Log.Utility {
 
     const _reservedCharacters = ["'", '"', '?', ':', '/', '\\', '>', '<', '*', '%', '|', ' ', '.', ',']
 
+    /**
+     * These characters could not be used in filepaths to avoid problems.
+     */
     export const reservedCharacters = [..._reservedCharacters]
 
+    /**
+     * Represents current time in friendly form.
+     * 
+     * Properties:
+     * * day:`number`
+     * * month:`number`
+     * * hour:`number`
+     * * minute:`number`
+     * * second:`number`
+     * 
+     * Methods:
+     * * toString():`string`
+     * 
+     * Static methods:
+     * * toString(`TimeStamp`):`string`
+     */
     export class TimeStamp {
-        readonly day: number
-        readonly month: number
-        readonly year: number
-        readonly hour: number
-        readonly minute: number
-        readonly second: number
-        constructor() {
+        public readonly day: number
+        public readonly month: number
+        public readonly year: number
+        public readonly hour: number
+        public readonly minute: number
+        public readonly second: number
+
+        /**
+         * Creates an instance of TimeStamp.
+         * @memberof TimeStamp
+         */
+        public constructor() {
             var date = new Date()
             this.day = date.getDate()
             this.month = date.getMonth()
@@ -202,11 +395,25 @@ export namespace Log.Utility {
             this.second = date.getSeconds()
         }
 
-        toString(): string {
+        /**
+         * Get string representation of a timestamp.
+         *
+         * @returns {string} Timecode in form `[hour:minute:second]`
+         * @memberof TimeStamp 
+         */
+        public toString(): string {
             return TimeStamp.toString(this)
         }
 
-        static toString(timestamp: TimeStamp): string {
+        /**
+         * Get string representation of a timestamp.
+         *
+         * @static
+         * @param {TimeStamp} timestamp Input timestamp object
+         * @returns {string} Timecode in form `[hour:minute:second]`
+         * @memberof TimeStamp
+         */
+        public static toString(timestamp: TimeStamp): string {
             var string = '[' + timestamp.hour + ':' + timestamp.minute + ':' + timestamp.second + ']'
             return string
         }

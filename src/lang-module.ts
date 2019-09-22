@@ -8,10 +8,27 @@ export namespace Lang {
 
     const langdatafile = `.${path.sep}helper-modules${path.sep}lang-module.json`
 
+    /**
+     *
+     *
+     * @export
+     * @param {string} id
+     * @param {string} key
+     * @returns {string}
+     */
     export function getMessage(id: string, key: string): string {
         return LangInternal.Instance.getMessage(id, key)
     }
 
+
+    /**
+     *
+     *
+     * @export
+     * @param {Array<[string, string]>} messages
+     * @param {string} [lang='en']
+     * @returns {boolean}
+     */
     export function registerLanguage(messages: Array<[string, string]>, lang: string = 'en'): boolean {
         Log.Utility.reservedCharacters.forEach(char => {
             if (lang.includes(char)) {
@@ -22,40 +39,96 @@ export namespace Lang {
         return true
     }
 
+    /**
+     *
+     *
+     * @export
+     * @param {string} lang
+     * @param {string} key
+     * @returns {boolean}
+     */
     export function hasMessage(lang: string, key: string): boolean {
         return LangInternal.Instance.hasMessage(lang, key)
     }
 
+    /**
+     *
+     *
+     * @export
+     * @param {string} lang
+     * @returns {Array<[string, string]>}
+     */
     export function getLanguageMessages(lang: string): Array<[string, string]> {
         return LangInternal.Instance.getLanguageMessages(lang)
     }
 
+    /**
+     *
+     *
+     * @export
+     * @returns {string[]}
+     */
     export function getAvailableLanguages(): string[] {
         return LangInternal.Instance.getAvailableLanguages()
     }
 
+    /**
+     *
+     *
+     * @export
+     * @param {string} id
+     * @returns {string}
+     */
     export function getLanguage(id: string): string {
         return LangInternal.Instance.getLanguage(id)
     }
 
+    /**
+     *
+     *
+     * @export
+     * @param {string} id
+     * @param {string} lang
+     * @returns {void}
+     */
     export function setLanguage(id: string, lang: string): void {
         return LangInternal.Instance.setLanguage(id, lang)
     }
 
+    /**
+     *
+     *
+     * @interface ILangData
+     */
     interface ILangData {
         id: string
         locale: string
     }
 
+    /**
+     *
+     *
+     * @interface ILanguage
+     */
     interface ILanguage {
         locale: string
         messages: Array<[string, string]>
     }
 
+    /**
+     *
+     *
+     * @class LangInternal
+     */
     class LangInternal {
         private data: Array<ILangData>
         private languages: Array<ILanguage>
         private static _instance: LangInternal
+
+        /**
+         *Creates an instance of LangInternal.
+         * @memberof LangInternal
+         */
         constructor() {
             this.data = new Array<ILangData>()
             this.languages = new Array<ILanguage>()
@@ -63,11 +136,26 @@ export namespace Lang {
             this.loadData()
         }
 
+        /**
+         *
+         *
+         * @param {string} id
+         * @param {string} msg
+         * @returns
+         * @memberof LangInternal
+         */
         getMessage(id: string, msg: string) {
             var locale = getLanguage(id)
             return this.getMessageInternal(locale, msg)
         }
 
+        /**
+         *
+         *
+         * @param {string} locale
+         * @param {Array<[string, string]>} messages
+         * @memberof LangInternal
+         */
         registerLanguage(locale: string, messages: Array<[string, string]>) {
             var lang = this.languages.find(lang => lang.locale === locale)
             if (lang !== undefined) {
@@ -88,6 +176,14 @@ export namespace Lang {
             this.saveLangFile(locale)
         }
 
+        /**
+         *
+         *
+         * @param {string} locale
+         * @param {string} message
+         * @returns
+         * @memberof LangInternal
+         */
         hasMessage(locale: string, message: string) {
             var lang = this.languages.find(lang => lang.locale === locale)
             if (lang !== undefined) {
@@ -100,6 +196,13 @@ export namespace Lang {
             return false;
         }
 
+        /**
+         *
+         *
+         * @param {string} locale
+         * @returns
+         * @memberof LangInternal
+         */
         getLanguageMessages(locale: string) {
             var messages = new Array<[string, string]>()
             var data = this.languages.find(lang => lang.locale === locale)
@@ -111,10 +214,23 @@ export namespace Lang {
             return messages
         }
 
+        /**
+         *
+         *
+         * @returns
+         * @memberof LangInternal
+         */
         getAvailableLanguages() {
             return this.languages.map(lang => lang.locale)
         }
 
+        /**
+         *
+         *
+         * @param {string} id
+         * @returns {string}
+         * @memberof LangInternal
+         */
         getLanguage(id: string): string {
             var data = this.data.find(data => data.id === id)
             if (data === undefined) {
@@ -128,6 +244,13 @@ export namespace Lang {
             return data.locale
         }
 
+        /**
+         *
+         *
+         * @param {string} id
+         * @param {string} locale
+         * @memberof LangInternal
+         */
         setLanguage(id: string, locale: string) {
             var data = this.data.find(data => data.id === id)
             if (data === undefined) {
@@ -143,6 +266,15 @@ export namespace Lang {
             setImmediate(() => fs.writeFileSync(langdatafile, JSON.stringify(this.data)))
         }
 
+        /**
+         *
+         *
+         * @private
+         * @param {string} locale
+         * @param {string} msg
+         * @returns
+         * @memberof LangInternal
+         */
         private getMessageInternal(locale: string, msg: string) {
             if (this.languages.length < 1) {
                 Log.logWarning('App is trying to use language module, but no languages are registered!')
@@ -162,10 +294,24 @@ export namespace Lang {
             return message[1]
         }
 
+        /**
+         *
+         *
+         * @private
+         * @param {string} locale
+         * @returns
+         * @memberof LangInternal
+         */
         private getPath(locale: string) {
             return path.join(langfolder, `lang_${locale}.json`)
         }
 
+        /**
+         *
+         *
+         * @private
+         * @memberof LangInternal
+         */
         private loadData() {
             if (!fs.existsSync(langdatafile)) {
                 fs.writeFileSync(langdatafile, JSON.stringify(this.data))
@@ -182,6 +328,12 @@ export namespace Lang {
             }
         }
 
+        /**
+         *
+         *
+         * @private
+         * @memberof LangInternal
+         */
         private fetchLangFiles() {
             if (!fs.existsSync(langfolder)) {
                 fs.mkdirSync(langfolder, { recursive: true })
@@ -207,6 +359,13 @@ export namespace Lang {
             }
         }
 
+        /**
+         *
+         *
+         * @private
+         * @param {string} locale
+         * @memberof LangInternal
+         */
         private saveLangFile(locale: string) {
             if (!fs.existsSync(langfolder)) {
                 fs.mkdirSync(langfolder, { recursive: true })
@@ -223,6 +382,13 @@ export namespace Lang {
             }
         }
 
+        /**
+         *
+         *
+         * @readonly
+         * @static
+         * @memberof LangInternal
+         */
         static get Instance() {
             if (LangInternal._instance === undefined) {
                 LangInternal._instance = new LangInternal()
