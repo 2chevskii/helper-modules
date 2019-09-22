@@ -3,7 +3,7 @@
 [license]: https://www.tldrlegal.com/l/mit
 [discord]: https://discord.gg/DBaqZNZ
 
-## <div style="text-align:center; font-style:bold; color:aqua">HELPER MODULES <hr> [![npmjs](https://img.shields.io/npm/v/helper-modules)][npmjs] [![license](https://img.shields.io/github/license/2chevskii/discord-bot-helpers)][license] [![discord](https://discordapp.com/api/guilds/266961601784053781/embed.png)][discord] ![](https://img.shields.io/github/last-commit/2chevskii/discord-bot-helpers?style=flat) <hr> </div>
+## <div style="text-align:center; font-style:bold; color:yellow">HELPER MODULES <hr> [![npmjs](https://img.shields.io/npm/v/helper-modules)][npmjs] [![license](https://img.shields.io/github/license/2chevskii/discord-bot-helpers)][license] [![discord](https://discordapp.com/api/guilds/266961601784053781/embed.png)][discord] ![](https://img.shields.io/github/last-commit/2chevskii/discord-bot-helpers?style=flat) <hr> </div>
 
 > Library for handling various things like commands, localization, logging etc.
 
