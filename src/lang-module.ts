@@ -2,6 +2,10 @@ import fs from 'fs'
 import { Log } from './log-module'
 import path from 'path'
 
+/**
+ * Contains definitions for localization.
+ * @namespace Lang
+ */
 export namespace Lang {
 
     const langfolder = `.${path.sep}helper-modules${path.sep}locales`
@@ -15,6 +19,7 @@ export namespace Lang {
      * @param {string} id Id of the user or server to get appropriate message localization.
      * @param {string} key Key of the phrase' key-value pair.
      * @returns {string} Value of the phrase' key-value pair.
+     * @memberof Lang
      */
     export function getMessage(id: string, key: string): string {
         return LangInternal.Instance.getMessage(id, key)
@@ -28,6 +33,7 @@ export namespace Lang {
      * @param messages Dictionary with messages ([string,string][]). If the language already exists, it will be updated with missing *keys*, existing ones will be kept unchanged.
      * @param {string} [lang='en'] Locale string.
      * @returns {boolean} Returns true if language is registered successfully, or false, if localization literal contains restricted characters (Listed in `Log.Utility.reservedCharacters`)
+     * @memberof Lang
      */
     export function registerLanguage(messages: Array<[string, string]>, lang: string = 'en'): boolean {
         Log.Utility.reservedCharacters.forEach(char => {
@@ -46,6 +52,7 @@ export namespace Lang {
      * @param {string} lang Language literal.
      * @param {string} key Phrase key.
      * @returns {boolean} Message exists or not.
+     * @memberof Lang
      */
     export function hasMessage(lang: string, key: string): boolean {
         return LangInternal.Instance.hasMessage(lang, key)
@@ -57,6 +64,7 @@ export namespace Lang {
      * @export
      * @param {string} lang Language literal.
      * @returns Message disctionary (Array<[string, string]>). May contain 0 entries, but never undefined.
+     * @memberof Lang
      */
     export function getLanguageMessages(lang: string): Array<[string, string]> {
         return LangInternal.Instance.getLanguageMessages(lang)
@@ -67,6 +75,7 @@ export namespace Lang {
      *
      * @export
      * @returns {string[]} Literal array.
+     * @memberof Lang
      */
     export function getAvailableLanguages(): string[] {
         return LangInternal.Instance.getAvailableLanguages()
@@ -78,6 +87,7 @@ export namespace Lang {
      * @export
      * @param {string} id Id which you want to get information for.
      * @returns {string} Localization string (default, if data does not exist).
+     * @memberof Lang
      */
     export function getLanguage(id: string): string {
         return LangInternal.Instance.getLanguage(id)
@@ -90,6 +100,7 @@ export namespace Lang {
      * @param {string} id Chosen user/server id.
      * @param {string} lang New language.
      * @returns {void}
+     * @memberof Lang
      */
     export function setLanguage(id: string, lang: string): void {
         return LangInternal.Instance.setLanguage(id, lang)
@@ -99,6 +110,7 @@ export namespace Lang {
      * Object which contains data for one user/server.
      *
      * @interface ILangData
+     * @memberof Lang
      */
     interface ILangData {
         id: string
@@ -109,6 +121,7 @@ export namespace Lang {
      * Object which contains language data for one literal ('en'/'de' etc.).
      *
      * @interface ILanguage
+     * @memberof Lang
      */
     interface ILanguage {
         locale: string
@@ -119,6 +132,7 @@ export namespace Lang {
      * Internal class to hide certain methods.
      *
      * @class LangInternal
+     * @memberof Lang
      */
     class LangInternal {
         private data: Array<ILangData>
@@ -128,7 +142,7 @@ export namespace Lang {
         /**
          * Creates an instance of LangInternal.
          * 
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         constructor() {
             this.data = new Array<ILangData>()
@@ -143,7 +157,7 @@ export namespace Lang {
          * @param {string} id Chosen user/server id.
          * @param {string} msg Message key.
          * @returns {string} Localized phrase.
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         getMessage(id: string, msg: string): string {
             var locale = getLanguage(id)
@@ -155,7 +169,7 @@ export namespace Lang {
          *
          * @param {string} locale Localization literal.
          * @param messages Localization dictionary (Array<[string, string]>).
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         registerLanguage(locale: string, messages: Array<[string, string]>) {
             var lang = this.languages.find(lang => lang.locale === locale)
@@ -183,7 +197,7 @@ export namespace Lang {
          * @param {string} locale Localization string.
          * @param {string} message Localization message key.
          * @returns {boolean} Whether message exists in the chosen language or not.
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         hasMessage(locale: string, message: string) {
             var lang = this.languages.find(lang => lang.locale === locale)
@@ -202,7 +216,7 @@ export namespace Lang {
          *
          * @param {string} locale Localization string.
          * @returns Language messages (Array<[string, string]>).
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         getLanguageMessages(locale: string): Array<[string, string]> {
             var messages = new Array<[string, string]>()
@@ -219,7 +233,7 @@ export namespace Lang {
          * Get all language strings.
          *
          * @returns {Array<string>} Array with localization strings.
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         getAvailableLanguages(): string[] {
             return this.languages.map(lang => lang.locale)
@@ -230,7 +244,7 @@ export namespace Lang {
          *
          * @param {string} id User/server id.
          * @returns {string} Localization string.
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         getLanguage(id: string): string {
             var data = this.data.find(data => data.id === id)
@@ -250,7 +264,7 @@ export namespace Lang {
          *
          * @param {string} id User/server id.
          * @param {string} locale New localization string.
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         setLanguage(id: string, locale: string): void {
             var data = this.data.find(data => data.id === id)
@@ -274,7 +288,7 @@ export namespace Lang {
          * @param {string} locale Localization literal.
          * @param {string} msg Message key.
          * @returns {string} Localized message or key, if localization does not exist.
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         private getMessageInternal(locale: string, msg: string): string {
             if (this.languages.length < 1) {
@@ -301,7 +315,7 @@ export namespace Lang {
          * @private
          * @param {string} locale Localization literal.
          * @returns {string} Path to the localization file.
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         private getPath(locale: string): string {
             return path.join(langfolder, `lang_${locale}.json`)
@@ -311,7 +325,7 @@ export namespace Lang {
          * Load language data.
          *
          * @private
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         private loadData(): void {
             if (!fs.existsSync(langdatafile)) {
@@ -333,7 +347,7 @@ export namespace Lang {
          * Load language files from the localization folder.
          *
          * @private
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         private fetchLangFiles(): void {
             if (!fs.existsSync(langfolder)) {
@@ -365,7 +379,7 @@ export namespace Lang {
          *
          * @private
          * @param {string} locale
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         private saveLangFile(locale: string) {
             if (!fs.existsSync(langfolder)) {
@@ -388,7 +402,7 @@ export namespace Lang {
          *
          * @readonly
          * @static
-         * @memberof LangInternal
+         * @memberof Lang.LangInternal
          */
         static get Instance() {
             if (LangInternal._instance === undefined) {
