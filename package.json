@@ -5,7 +5,8 @@
   "main": "distr/index.js",
   "typings": "distr/typings",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "build:docs": "npx typedoc --out docs --exclude src/index.ts --readme README.md --tsconfig tsconfig.json --mode modules src"
   },
   "keywords": [
     "discord",
@@ -21,7 +22,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^12.7.5",
-    "jsdoc": "^3.6.3",
+    "typedoc": "^0.15.0",
     "typescript": "^3.6.3"
   },
   "dependencies": {

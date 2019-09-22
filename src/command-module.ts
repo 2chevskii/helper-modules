@@ -5,16 +5,58 @@ import { Log } from './log-module'
 
 // DISABLED COMMANDS ARE NOT HANDLED
 
+/**
+ * Contains definitions for handling commands.
+ * @namespace Command
+ */
 export namespace Command {
 
+    /**
+     * @type {string}
+     * @memberof Command
+     */
     const commanddatafile = `.${path.sep}helper-modules${path.sep}command-module.json`
 
+    /**
+     * @type {string}
+     * @memberof Command
+     */
     const defaultprefix = '!'
 
+    /**
+     * @type {CommandResolveResult<T extends string | Message>}
+     * @memberof Command
+     */
     type CommandResolveResult<T extends string | Message> = Command.Utility.CommandResolveResult<T>
 
+    /**
+     * Universal method for command handling.
+     * @function
+     * @export
+     * @async
+     * @param {Message} message Message which needs to be handled
+     * @param {boolean} [executeCallback] Whether callback should be executed immediately
+     * @returns {Promise<CommandResolveResult<Message>>}
+     * @memberof Command
+     */
     export async function onMessage(message: Message, executeCallback?: boolean): Promise<CommandResolveResult<Message>>
+    /**
+     * @function
+     * @async
+     * @export
+     * @param {string} message
+     * @param {boolean} [executeCallback]
+     * @returns {Promise<CommandResolveResult<string>>}
+     */
     export async function onMessage(message: string, executeCallback?: boolean): Promise<CommandResolveResult<string>>
+    /**
+     * @export
+     * @function
+     * @async
+     * @param {(string | Message)} message
+     * @param {boolean} [executeCallback=true]
+     * @returns {(Promise<CommandResolveResult<string> | CommandResolveResult<Message>>)}
+     */
     export async function onMessage(message: string | Message, executeCallback: boolean = true): Promise<CommandResolveResult<string> | CommandResolveResult<Message>> {
         if (typeof message === 'string') {
             return onConsoleMessage(message, executeCallback)
@@ -24,61 +66,163 @@ export namespace Command {
         }
     }
 
+    /**
+     * Method for handling console commands.
+     * @async
+     * @function
+     * @export
+     * @param {string} message Message which needs to be handled
+     * @param {boolean} [executeCallback=true] Whether callback should be executed immediately
+     * @returns {Promise<CommandResolveResult<string>>}
+     * @memberof Command
+     */
     export async function onConsoleMessage(message: string, executeCallback: boolean = true): Promise<CommandResolveResult<string>> {
         return CommandInternal.Instance.onConsoleMessage(message, executeCallback)
     }
 
-    export function onDiscordMessage(message: Message, executeCallback: boolean = true): Promise<CommandResolveResult<Message>> {
+    /**
+     * Method for hadnling discord commands and messages.
+     * @async
+     * @function
+     * @export
+     * @param {Message} message Message which needs to be handled
+     * @param {boolean} [executeCallback=true] Whether callback should be executed immediately
+     * @returns {Promise<CommandResolveResult<Message>>}
+     * @memberof Command
+     */
+    export async function onDiscordMessage(message: Message, executeCallback: boolean = true): Promise<CommandResolveResult<Message>> {
         return CommandInternal.Instance.onDiscordMessage(message, executeCallback)
     }
 
+    /**
+     * Get all existing commands.
+     * @function
+     * @export
+     * @returns {object[]} Array with objects ({ name: string, type: Command.Utility.CommandType }[])
+     * @memberof Command
+     */
     export function getCommands(): { name: string, type: Command.Utility.CommandType }[] {
         return CommandInternal.Instance.getCommands()
     }
 
+    /**
+     * Get callback(s) for specifies command name.
+     * @export
+     * @param {string} cmd Command name
+     * @returns {object | object[] | undefined} *object represents ICommand['callback'] | object[] represents { type: Command.Utility.CommandType, callback: ICommand['callback'] }[]*
+     * @memberof Command
+     */
     export function getCallback(cmd: string): ICommand['callback'] | { type: Command.Utility.CommandType, callback: ICommand['callback'] }[] | undefined {
         return CommandInternal.Instance.getCallback(cmd)
     }
 
+    /**
+     * Register new command.
+     * @export
+     * @function
+     * @param {string} cmd Command name
+     * @param {(Command.Utility.CommandType.DM | Command.Utility.CommandType.server | Command.Utility.CommandType.shared)} type Command type
+     * @param {object} callback Command callback. *object represents DiscordCommand['callback']*
+     * @returns {boolean}
+     * @memberof Command
+     */
     export function registerCommand(cmd: string, type: Command.Utility.CommandType.DM | Command.Utility.CommandType.server | Command.Utility.CommandType.shared, callback: DiscordCommand['callback']): boolean
+    /**
+     * @export
+     * @function
+     * @param {string} cmd
+     * @param {Command.Utility.CommandType.console} type
+     * @param {object} callback *object represents ConsoleCommand['callback']*
+     * @returns {boolean}
+     */
     export function registerCommand(cmd: string, type: Command.Utility.CommandType.console, callback: ConsoleCommand['callback']): boolean
+    /**
+     * @export
+     * @function
+     * @param {string} cmd
+     * @param {Command.Utility.CommandType} type
+     * @param {object} callback *object represents ICommand['callback']*
+     * @returns {boolean}
+     */
     export function registerCommand(cmd: string, type: Command.Utility.CommandType, callback: ICommand['callback']): boolean {
         return CommandInternal.Instance.registerCommand(cmd, type, callback)
     }
 
+    /**
+     * Remove command from data.
+     * @function
+     * @export
+     * @param {string} cmd
+     * @returns {boolean}
+     * @memberof Command
+     */
     export function unregisterCommand(cmd: string): boolean {
         return CommandInternal.Instance.unregisterCommand(cmd)
     }
 
+    /**
+     * Disable command for specified id.
+     *
+     * @export
+     * @param {string} id
+     * @param {string} cmd
+     * @returns {boolean}
+     * @memberof Command
+     */
     export function disableCommand(id: string, cmd: string): boolean {
         return CommandInternal.Instance.disableCommand(id, cmd)
     }
 
+    /**
+     * Enable previously disabled command.
+     *
+     * @export
+     * @param {string} id
+     * @param {string} cmd
+     * @returns {boolean}
+     * @memberof Command
+     */
     export function enableCommand(id: string, cmd: string): boolean {
         return CommandInternal.Instance.enableCommand(id, cmd)
     }
 
+    /**
+     * Get all disabled commands for specified user/server id.
+     *
+     * @export
+     * @param {string} id
+     * @returns {string[]}
+     * @memberof Command
+     */
     export function getDisabledCommands(id: string): string[] {
         return CommandInternal.Instance.getDisabledCommands(id)
     }
 
+    /**
+     * Get state of command for chosen id.
+     *
+     * @export
+     * @param {string} id
+     * @param {string} name
+     * @returns {boolean}
+     * @memberof Command
+     */
     export function isCommandDisabled(id: string, name: string): boolean {
         return CommandInternal.Instance.isCommandDisabled(id, name)
     }
-
-
 
     class CommandInternal {
         private static _instance: CommandInternal
         private data: Data[]
         private commands: ICommand[]
-        constructor() {
+
+        public constructor() {
             this.data = new Array<Data>()
             this.commands = new Array<ICommand>()
             this.loadData()
         }
 
-        async onDiscordMessage(message: Message, execute: boolean): Promise<Command.Utility.CommandResolveResult<Message>> {
+        public async onDiscordMessage(message: Message, execute: boolean): Promise<Command.Utility.CommandResolveResult<Message>> {
             return new Promise(resolve => {
                 var cmd = this.parseCommand(message)
                 var ct = message.guild == undefined ? Command.Utility.CommandType.DM : Command.Utility.CommandType.server
@@ -111,7 +255,7 @@ export namespace Command {
             })
         }
 
-        async onConsoleMessage(message: string, execute: boolean): Promise<Command.Utility.CommandResolveResult<string>> {
+        public async onConsoleMessage(message: string, execute: boolean): Promise<Command.Utility.CommandResolveResult<string>> {
             return new Promise((resolve) => {
                 var cmd = this.parseCommand(message)
                 if (cmd === undefined) {
@@ -219,11 +363,11 @@ export namespace Command {
             return args;
         }
 
-        getPrefix(id: string) {
+        public getPrefix(id: string) {
             return this.getData(id).getPrefix()
         }
 
-        setPrefix(id: string, prefix: string) {
+        public setPrefix(id: string, prefix: string): boolean {
             let res = this.getData(id).setPrefix(prefix);
             if (res) {
                 fs.mkdirSync(path.dirname(commanddatafile), { recursive: true })
@@ -232,19 +376,19 @@ export namespace Command {
             return res
         }
 
-        isCommandDisabled(id: string, name: string): boolean {
+        public isCommandDisabled(id: string, name: string): boolean {
             return this.getData(id).isCommandDisabled(name)
         }
 
-        getDisabledCommands(id: string) {
+        public getDisabledCommands(id: string): string[] {
             return this.getData(id).getDisabledCommands()
         }
 
-        enableCommand(id: string, name: string): boolean {
+        public enableCommand(id: string, name: string): boolean {
             return this.getData(id).enableCommand(name)
         }
 
-        disableCommand(id: string, name: string): boolean {
+        public disableCommand(id: string, name: string): boolean {
             return this.getData(id).disableCommand(name)
         }
 
@@ -258,7 +402,7 @@ export namespace Command {
             return data;
         }
 
-        getCommands(): { name: string, type: Command.Utility.CommandType }[] {
+        public getCommands(): { name: string, type: Command.Utility.CommandType }[] {
             return this.commands.map(cmd => {
                 return {
                     name: cmd.name,
@@ -267,10 +411,10 @@ export namespace Command {
             })
         }
 
-        getCallback(name: string): undefined | ICommand['callback'] | { type: Command.Utility.CommandType, callback: ICommand['callback'] }[]
-        getCallback(name: string, type: Command.Utility.CommandType.DM | Command.Utility.CommandType.server | Command.Utility.CommandType.shared): undefined | typeof DiscordCommand.prototype.callback
-        getCallback(name: string, type: Command.Utility.CommandType.console): undefined | typeof ConsoleCommand.prototype.callback
-        getCallback(name: string, type?: Command.Utility.CommandType): undefined | ICommand['callback'] | { type: Command.Utility.CommandType, callback: ICommand['callback'] }[] {
+        public getCallback(name: string): undefined | ICommand['callback'] | { type: Command.Utility.CommandType, callback: ICommand['callback'] }[]
+        public getCallback(name: string, type: Command.Utility.CommandType.DM | Command.Utility.CommandType.server | Command.Utility.CommandType.shared): undefined | typeof DiscordCommand.prototype.callback
+        public getCallback(name: string, type: Command.Utility.CommandType.console): undefined | typeof ConsoleCommand.prototype.callback
+        public getCallback(name: string, type?: Command.Utility.CommandType): undefined | ICommand['callback'] | { type: Command.Utility.CommandType, callback: ICommand['callback'] }[] {
             var commands: CommandAbstract | CommandAbstract[] | undefined
 
             if (type === undefined) {
@@ -297,13 +441,13 @@ export namespace Command {
             }
         }
 
-        findCommands(name: string): CommandAbstract[] | undefined
-        findCommands(name: string, type: Command.Utility.CommandType.server): ServerCommand | undefined
-        findCommands(name: string, type: Command.Utility.CommandType.shared): SharedCommand | undefined
-        findCommands(name: string, type: Command.Utility.CommandType.DM): DMCommand | undefined
-        findCommands(name: string, type: Command.Utility.CommandType.console): ConsoleCommand | undefined
-        findCommands(name: string, type: Command.Utility.CommandType): CommandAbstract | CommandAbstract[] | undefined
-        findCommands(name: string, type?: Command.Utility.CommandType): CommandAbstract | CommandAbstract[] | undefined {
+        public findCommands(name: string): CommandAbstract[] | undefined
+        public findCommands(name: string, type: Command.Utility.CommandType.server): ServerCommand | undefined
+        public findCommands(name: string, type: Command.Utility.CommandType.shared): SharedCommand | undefined
+        public findCommands(name: string, type: Command.Utility.CommandType.DM): DMCommand | undefined
+        public findCommands(name: string, type: Command.Utility.CommandType.console): ConsoleCommand | undefined
+        public findCommands(name: string, type: Command.Utility.CommandType): CommandAbstract | CommandAbstract[] | undefined
+        public findCommands(name: string, type?: Command.Utility.CommandType): CommandAbstract | CommandAbstract[] | undefined {
             name = name.toLowerCase()
             var nameMatchingCommands = this.commands.filter(cmd => cmd.name == name)
             if (nameMatchingCommands.length < 1) {
@@ -320,10 +464,10 @@ export namespace Command {
             return exactCommand
         }
 
-        registerCommand(name: string, type: Command.Utility.CommandType.shared | Command.Utility.CommandType.server | Command.Utility.CommandType.DM, callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)): boolean
-        registerCommand(name: string, type: Command.Utility.CommandType.console, callback: (() => any) | ((args: string[]) => any)): boolean
-        registerCommand(name: string, type: Command.Utility.CommandType, callback: (...args: any[]) => any): boolean
-        registerCommand(name: string, type: Command.Utility.CommandType, callback: (...args: any[]) => any): boolean {
+        public registerCommand(name: string, type: Command.Utility.CommandType.shared | Command.Utility.CommandType.server | Command.Utility.CommandType.DM, callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)): boolean
+        public registerCommand(name: string, type: Command.Utility.CommandType.console, callback: (() => any) | ((args: string[]) => any)): boolean
+        public registerCommand(name: string, type: Command.Utility.CommandType, callback: (...args: any[]) => any): boolean
+        public registerCommand(name: string, type: Command.Utility.CommandType, callback: (...args: any[]) => any): boolean {
             if (name.includes(' ')) {
                 return false;
             }
@@ -367,7 +511,7 @@ export namespace Command {
             return true
         }
 
-        unregisterCommand(cmd: string): boolean {
+        public unregisterCommand(cmd: string): boolean {
             if (this.commands.find((command) => command.name === cmd) === undefined) {
                 return false;
             }
@@ -375,7 +519,7 @@ export namespace Command {
             return true
         }
 
-        private loadData() {
+        private loadData(): void {
             if (!fs.existsSync(commanddatafile)) {
                 fs.mkdirSync(path.dirname(commanddatafile), { recursive: true })
                 fs.writeFileSync(commanddatafile, JSON.stringify(this.data))
@@ -392,7 +536,7 @@ export namespace Command {
             }
         }
 
-        static get Instance() {
+        public static get Instance(): CommandInternal {
             if (CommandInternal._instance === undefined) {
                 CommandInternal._instance = new CommandInternal()
             }
@@ -400,20 +544,18 @@ export namespace Command {
         }
     }
 
-
-
     class Data {
         readonly id: string
         private prefix: string
         private disabledCommands: string[]
 
-        constructor(id: string) {
+        public constructor(id: string) {
             this.id = id
             this.prefix = defaultprefix
             this.disabledCommands = new Array<string>()
         }
 
-        disableCommand(cmd: string): boolean {
+        public disableCommand(cmd: string): boolean {
             if (this.isCommandDisabled(cmd)) {
                 return false;
             }
@@ -421,7 +563,7 @@ export namespace Command {
             return true
         }
 
-        enableCommand(cmd: string): boolean {
+        public enableCommand(cmd: string): boolean {
             if (!this.isCommandDisabled(cmd)) {
                 return false;
             }
@@ -429,19 +571,19 @@ export namespace Command {
             return true
         }
 
-        isCommandDisabled(cmd: string): boolean {
+        public isCommandDisabled(cmd: string): boolean {
             return this.disabledCommands.includes(cmd)
         }
 
-        getDisabledCommands(): string[] {
+        public getDisabledCommands(): string[] {
             return [...this.disabledCommands]
         }
 
-        getPrefix(): string {
+        public getPrefix(): string {
             return this.prefix
         }
 
-        setPrefix(prefix: string): boolean {
+        public setPrefix(prefix: string): boolean {
             if (prefix.length < 1) {
                 return false;
             }
@@ -462,25 +604,25 @@ export namespace Command {
         public name: string
         public type: Command.Utility.CommandType
         public callback: (...args: any[]) => any
-        constructor(name: string, type: Command.Utility.CommandType, callback: (...args: any[]) => any) {
+        public constructor(name: string, type: Command.Utility.CommandType, callback: (...args: any[]) => any) {
             this.name = name
             this.type = type
             this.callback = callback
         }
 
-        abstract async executeCallback(...args: any[]): Promise<any>
+        public abstract async executeCallback(...args: any[]): Promise<any>
     }
 
     class ConsoleCommand extends CommandAbstract implements ICommand {
-        callback: (() => any) | ((args: string[]) => any)
-        constructor(name: string, callback: (() => any) | ((args: string[]) => any)) {
+        public callback: (() => any) | ((args: string[]) => any)
+        public constructor(name: string, callback: (() => any) | ((args: string[]) => any)) {
             super(name, Command.Utility.CommandType.console, callback)
             this.callback = callback
         }
 
-        async executeCallback(): Promise<any>
-        async executeCallback(args: string[]): Promise<any>
-        async executeCallback(args?: string[]): Promise<any> {
+        public async executeCallback(): Promise<any>
+        public async executeCallback(args: string[]): Promise<any>
+        public async executeCallback(args?: string[]): Promise<any> {
             return new Promise((resolve, reject) => {
                 setImmediate(() => {
                     try {
@@ -494,9 +636,9 @@ export namespace Command {
     }
 
     abstract class DiscordCommand extends CommandAbstract implements ICommand {
-        type: Command.Utility.CommandType.shared | Command.Utility.CommandType.server | Command.Utility.CommandType.DM
-        callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)
-        constructor(name: string, type: Command.Utility.CommandType.shared | Command.Utility.CommandType.server | Command.Utility.CommandType.DM, callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)) {
+        public type: Command.Utility.CommandType.shared | Command.Utility.CommandType.server | Command.Utility.CommandType.DM
+        public callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)
+        public constructor(name: string, type: Command.Utility.CommandType.shared | Command.Utility.CommandType.server | Command.Utility.CommandType.DM, callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)) {
             super(name, type, callback)
             this.type = type
             this.callback = callback
@@ -519,44 +661,131 @@ export namespace Command {
     }
 
     class DMCommand extends DiscordCommand implements ICommand {
-        type: Command.Utility.CommandType.DM
-        constructor(name: string, callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)) {
+        public type: Command.Utility.CommandType.DM
+        public constructor(name: string, callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)) {
             super(name, Command.Utility.CommandType.DM, callback)
             this.type = Command.Utility.CommandType.DM
         }
     }
 
     class ServerCommand extends DiscordCommand implements ICommand {
-        type: Command.Utility.CommandType.server
-        constructor(name: string, callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)) {
+        public type: Command.Utility.CommandType.server
+        public constructor(name: string, callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)) {
             super(name, Command.Utility.CommandType.server, callback)
             this.type = Command.Utility.CommandType.server
         }
     }
 
     class SharedCommand extends DiscordCommand implements ICommand {
-        type: Command.Utility.CommandType.shared
-        constructor(name: string, callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)) {
+        public type: Command.Utility.CommandType.shared
+        public constructor(name: string, callback: (() => any) | ((message: Message) => any) | ((message: Message, args: string[]) => any)) {
             super(name, Command.Utility.CommandType.shared, callback)
             this.type = Command.Utility.CommandType.shared
         }
     }
 }
 
+/**
+ * @namespace Command.Utility
+ * @memberof Command
+ */
 export namespace Command.Utility {
-    export class CommandResolveResult<T extends string | Message>{
-        isCommand: boolean
-        message: T
-        cmd: undefined | string
-        args: undefined | string[]
-        argsCount: number
-        wasExecuted: boolean
-        calledIn: CommandType
-        nativeType: undefined | CommandType
-        callback: undefined | ((...args: any[]) => any)
-        executeResult: any
 
-        constructor(isCommand: boolean, message: T, calledIn: CommandType, wasExecuted: boolean, cmd?: string, args?: string[], nativeType?: CommandType, callback?: (...args: any[]) => any, execResult?: any) {
+    /**
+     * Represents result of handling commands.
+     * @export
+     * @class CommandResolveResult
+     * @template T
+     * @memberof Command.Utility
+     */
+    export class CommandResolveResult<T extends string | Message> {
+        /**
+         * @public
+         * @readonly
+         * @type {boolean}
+         * @memberof Command.Utility.CommandResolveResult
+         */
+        public readonly isCommand: boolean
+        /**
+         * @public
+         * @readonly
+         * @type {T}
+         * @memberof Command.Utility.CommandResolveResult
+         */
+        public readonly message: T
+        /**
+         * @public
+         * @readonly
+         * @type {undefined | string}
+         * @memberof Command.Utility.CommandResolveResult
+         */
+        public readonly cmd: undefined | string
+        /**
+         * @public
+         * @readonly
+         * @type {undefined | string[]}
+         * @memberof Command.Utility.CommandResolveResult
+         */
+        public readonly args: undefined | string[]
+        /**
+         * @public
+         * @readonly
+         * @type {number}
+         * @memberof Command.Utility.CommandResolveResult
+         */
+        public readonly argsCount: number
+        /**
+         * @public
+         * @readonly
+         * @type {boolean}
+         * @memberof Command.Utility.CommandResolveResult
+         */
+        public readonly wasExecuted: boolean
+        /**
+         * @public
+         * @readonly
+         * @type {CommandType}
+         * @memberof Command.Utility.CommandResolveResult
+         */
+        public readonly calledIn: CommandType
+        /**
+         * @public
+         * @readonly
+         * @type {undefined | CommandType}
+         * @memberof Command.Utility.CommandResolveResult
+         */
+        public readonly nativeType: undefined | CommandType
+        /**
+         * @public
+         * @readonly
+         * @type {undefined | Function} *Function represents (...args: any[]) => any*
+         * @memberof Command.UtilityCommandResolveResult
+         */
+        public readonly callback: undefined | ((...args: any[]) => any)
+        /**
+         * @public
+         * @readonly
+         * @type {*}
+         * @memberof Command.Utility.CommandResolveResult
+         */
+        public readonly executeResult: any
+
+        /**
+         * Creates an instance of CommandResolveResult.
+         * @constructor
+         * @public
+         * @param {boolean} isCommand
+         * @param {T} message
+         * @param {CommandType} calledIn
+         * @param {boolean} wasExecuted
+         * @param {string} [cmd]
+         * @param {string[]} [args]
+         * @param {CommandType} [nativeType]
+         * @param {Function} [callback] *Function represents (...args: any[]) => any*
+         * @param {*} [execResult]
+         * @memberof Command.Utility.CommandResolveResult
+         */
+        public constructor(isCommand: boolean, message: T, calledIn: CommandType, wasExecuted: boolean, cmd?: string, args?: string[], nativeType?: CommandType, callback?: (...args: any[]) => any, execResult?: any) {
             this.isCommand = isCommand
             this.message = message
             this.cmd = cmd
@@ -570,6 +799,12 @@ export namespace Command.Utility {
         }
     }
 
+    /**
+     * Type of command which could be handled.
+     * @export
+     * @enum {number}
+     * @memberof Command.Utility
+     */
     export enum CommandType { DM = 0, server = 1, shared = 2, console = 3 }
 }
 
