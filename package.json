@@ -5,7 +5,8 @@
   "main": "distr/index.js",
   "typings": "distr/typings",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "docs": "npm run build && npx jsdoc distr"
   },
   "keywords": [
     "discord",
