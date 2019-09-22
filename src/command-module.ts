@@ -3,8 +3,10 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { Log } from './log-module'
 
-//prefix is not saved to file
-
+/**
+ * Contains definitions for handling commands.
+ * @namespace Command
+ */
 export namespace Command {
 
     const commanddatafile = `.${path.sep}helper-modules${path.sep}command-module.json`
@@ -13,6 +15,14 @@ export namespace Command {
 
     type CommandResolveResult<T extends string | Message> = Command.Utility.CommandResolveResult<T>
 
+    /**
+     * Universal method for command handling.
+     *
+     * @export
+     * @param {Message} message
+     * @param {boolean} [executeCallback]
+     * @returns {Promise<CommandResolveResult<Message>>}
+     */
     export async function onMessage(message: Message, executeCallback?: boolean): Promise<CommandResolveResult<Message>>
     export async function onMessage(message: string, executeCallback?: boolean): Promise<CommandResolveResult<string>>
     export async function onMessage(message: string | Message, executeCallback: boolean = true): Promise<CommandResolveResult<string> | CommandResolveResult<Message>> {
@@ -24,32 +34,85 @@ export namespace Command {
         }
     }
 
+    /**
+     * Method for handling console commands.
+     *
+     * @export
+     * @param {string} message
+     * @param {boolean} [executeCallback=true]
+     * @returns {Promise<CommandResolveResult<string>>}
+     */
     export async function onConsoleMessage(message: string, executeCallback: boolean = true): Promise<CommandResolveResult<string>> {
         return CommandInternal.Instance.onConsoleMessage(message, executeCallback)
     }
 
+    /**
+     * Method for hadnling discord commands and messages.
+     *
+     * @export
+     * @param {Message} message
+     * @param {boolean} [executeCallback=true]
+     * @returns {Promise<CommandResolveResult<Message>>}
+     */
     export function onDiscordMessage(message: Message, executeCallback: boolean = true): Promise<CommandResolveResult<Message>> {
         return CommandInternal.Instance.onDiscordMessage(message, executeCallback)
     }
 
+    /**
+     * Get all existing commands.
+     *
+     * @export
+     * @returns {{ name: string, type: Command.Utility.CommandType }[]}
+     */
     export function getCommands(): { name: string, type: Command.Utility.CommandType }[] {
         return CommandInternal.Instance.getCommands()
     }
 
+    /**
+     * Get callback(s) for specifies command name.
+     *
+     * @export
+     * @param {string} cmd
+     * @returns {(ICommand['callback'] | { type: Command.Utility.CommandType, callback: ICommand['callback'] }[] | undefined)}
+     */
     export function getCallback(cmd: string): ICommand['callback'] | { type: Command.Utility.CommandType, callback: ICommand['callback'] }[] | undefined {
         return CommandInternal.Instance.getCallback(cmd)
     }
 
+    /**
+     * Register new command.
+     *
+     * @export
+     * @param {string} cmd
+     * @param {(Command.Utility.CommandType.DM | Command.Utility.CommandType.server | Command.Utility.CommandType.shared)} type
+     * @param {DiscordCommand['callback']} callback
+     * @returns {boolean}
+     */
     export function registerCommand(cmd: string, type: Command.Utility.CommandType.DM | Command.Utility.CommandType.server | Command.Utility.CommandType.shared, callback: DiscordCommand['callback']): boolean
     export function registerCommand(cmd: string, type: Command.Utility.CommandType.console, callback: ConsoleCommand['callback']): boolean
     export function registerCommand(cmd: string, type: Command.Utility.CommandType, callback: ICommand['callback']): boolean {
         return CommandInternal.Instance.registerCommand(cmd, type, callback)
     }
 
+    /**
+     * Remove command from data.
+     *
+     * @export
+     * @param {string} cmd
+     * @returns {boolean}
+     */
     export function unregisterCommand(cmd: string): boolean {
         return CommandInternal.Instance.unregisterCommand(cmd)
     }
 
+    /**
+     * Disable command for specified id.
+     *
+     * @export
+     * @param {string} id
+     * @param {string} cmd
+     * @returns {boolean}
+     */
     export function disableCommand(id: string, cmd: string): boolean {
         return CommandInternal.Instance.disableCommand(id, cmd)
     }
@@ -543,7 +606,20 @@ export namespace Command {
     }
 }
 
+/**
+ * @namespace Command.Utility
+ * @memberof Command
+ */
 export namespace Command.Utility {
+
+    /**
+     * Represents result of handling commands.
+     *
+     * @export
+     * @class CommandResolveResult
+     * @template T
+     * @memberof Command
+     */
     export class CommandResolveResult<T extends string | Message>{
         isCommand: boolean
         message: T
@@ -556,6 +632,20 @@ export namespace Command.Utility {
         callback: undefined | ((...args: any[]) => any)
         executeResult: any
 
+        /**
+         * Creates an instance of CommandResolveResult.
+         * 
+         * @param {boolean} isCommand
+         * @param {T} message
+         * @param {CommandType} calledIn
+         * @param {boolean} wasExecuted
+         * @param {string} [cmd]
+         * @param {string[]} [args]
+         * @param {CommandType} [nativeType]
+         * @param {(...args: any[]) => any} [callback]
+         * @param {*} [execResult]
+         * @memberof Command.CommandResolveResult
+         */
         constructor(isCommand: boolean, message: T, calledIn: CommandType, wasExecuted: boolean, cmd?: string, args?: string[], nativeType?: CommandType, callback?: (...args: any[]) => any, execResult?: any) {
             this.isCommand = isCommand
             this.message = message
@@ -570,6 +660,13 @@ export namespace Command.Utility {
         }
     }
 
+    /**
+     * Type of command which could be handled.
+     *
+     * @export
+     * @enum {number}
+     * @memberof Command
+     */
     export enum CommandType { DM = 0, server = 1, shared = 2, console = 3 }
 }
 
