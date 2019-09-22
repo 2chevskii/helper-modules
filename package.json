@@ -1,6 +1,6 @@
 {
   "name": "helper-modules",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Collection of functions and types intended to help you write discord bots (and more)",
   "main": "distr/index.js",
   "typings": "distr/typings",
