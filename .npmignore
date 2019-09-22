@@ -5,3 +5,4 @@ tsconfig.json
 src
 .gitignore
 *.code-workspace
+package-lock.json

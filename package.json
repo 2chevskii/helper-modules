@@ -25,5 +25,10 @@
   },
   "dependencies": {
     "discord.js": "^11.5.1"
-  }
+  },
+  "repository": {
+    "url": "git+https://github.com/2chevskii/helper-modules.git",
+    "type": "git"
+  },
+  "readme": "README.md"
 }
