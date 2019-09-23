@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2523" height="626" viewBox="0 0 2523 626">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        font-size: 300px;
+        text-anchor: middle;
+      }
+
+      .cls-1 {
+        fill: #520692;
+        font-family: Streamster;
+      }
+
+      .cls-2 {
+        fill: #fbe317;
+        font-family: "Imperfecta Rough";
+        text-transform: uppercase;
+      }
+    </style>
+  </defs>
+  <text id="by_2chevskii" data-name="by 2chevskii" class="cls-1" transform="translate(2115.026 521.782) scale(0.672 0.605)"><tspan x="0">by 2chevskii</tspan></text>
+  <text id="HELPER_MODULES" data-name="HELPER MODULES" class="cls-2" transform="translate(1278.122 323.893) scale(1.485)"><tspan x="0">HELPER MODULES</tspan></text>
+</svg>
