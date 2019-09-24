@@ -127,7 +127,7 @@ export namespace Lang {
         }
 
         public getMessage(id: string, msg: string): string {
-            var locale = getLanguage(id)
+            const locale = getLanguage(id)
             return this.getMessageInternal(locale, msg)
         }
 
@@ -151,7 +151,7 @@ export namespace Lang {
             this.saveLangFile(locale)
         }
 
-        public hasMessage(locale: string, message: string) {
+        public hasMessage(locale: string, message: string): boolean {
             var lang = this.languages.find(lang => lang.locale === locale)
             if (lang !== undefined) {
                 lang.messages.forEach(msg => {
@@ -252,8 +252,8 @@ export namespace Lang {
             for (let file of fs.readdirSync(langfolder)) {
                 if (file.startsWith('lang_') && file.endsWith('.json')) {
                     try {
-                        let locale = file.replace('lang_', '').replace('.json', '')
-                        let strings = JSON.parse(fs.readFileSync(this.getPath(locale), { encoding: 'utf-8', flag: 'r' }))
+                        const locale = file.replace('lang_', '').replace('.json', '')
+                        const strings = JSON.parse(fs.readFileSync(this.getPath(locale), { encoding: 'utf-8', flag: 'r' }))
                         var lang = this.languages.find(lang => lang.locale === locale)
                         if (lang !== undefined) {
                             this.languages = this.languages.filter(lang => lang.locale !== locale)

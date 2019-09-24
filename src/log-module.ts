@@ -131,8 +131,8 @@ export namespace Log {
         }
 
         public showLastLog(count: number): Array<LogMessage> {
-            var array = new Array<LogMessage>(0)
-            var i = 0
+            const array = new Array<LogMessage>(0)
+            const i = 0
             this.lastLog.reverse().forEach(msg => {
                 if (i === count) {
                     return array

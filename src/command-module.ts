@@ -255,7 +255,7 @@ export namespace Command {
                     resolve(new Command.Utility.CommandResolveResult(false, message, ct, false))
                 }
                 else {
-                    var args = this.parseArguments(message.content)
+                    const args = this.parseArguments(message.content)
 
                     var commands = this.findCommands(cmd)
 
@@ -263,7 +263,7 @@ export namespace Command {
                         resolve(new Command.Utility.CommandResolveResult(true, message, ct, false, cmd, args))
                     }
                     else {
-                        var exactCommand = this.findCommands(cmd, ct) as DiscordCommand
+                        const exactCommand = this.findCommands(cmd, ct) as DiscordCommand
                         if (exactCommand == undefined) {
                             resolve(new Command.Utility.CommandResolveResult(true, message, ct, false, cmd, args, commands[0].type, commands[0].callback))
                         }
@@ -326,7 +326,7 @@ export namespace Command {
             }
             else {
                 let prefix = command.guild == undefined ? this.getPrefix(command.author.id) : this.getPrefix(command.guild.id)
-                let array = command.content.split(' ')
+                const array = command.content.split(' ')
                 if (array.length < 1) {
                     return undefined;
                 }
