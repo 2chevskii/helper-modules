@@ -7,3 +7,4 @@ src
 *.code-workspace
 package-lock.json
 out
+docs
