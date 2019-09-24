@@ -64,25 +64,36 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<a href="#div-styletext-aligncenter-font-stylebold-coloraquahelper-modules-hr-a-hrefhttpswwwnpmjscompackagehelper-modulesimg-srchttpsimgshieldsionpmvhelper-modules-altnpmjsa-a-hrefhttpswwwtldrlegalcomlmitimg-srchttpsimgshieldsiogithublicense2chevskiidiscord-bot-helpers-altlicensea-a-hrefhttpsdiscordggdbaqznzimg-srchttpsdiscordappcomapiguilds266961601784053781embedpng-altdiscorda-img-srchttpsimgshieldsiogithublast-commit2chevskiidiscord-bot-helpersstyleflat-alt-hr-div" id="div-styletext-aligncenter-font-stylebold-coloraquahelper-modules-hr-a-hrefhttpswwwnpmjscompackagehelper-modulesimg-srchttpsimgshieldsionpmvhelper-modules-altnpmjsa-a-hrefhttpswwwtldrlegalcomlmitimg-srchttpsimgshieldsiogithublicense2chevskiidiscord-bot-helpers-altlicensea-a-hrefhttpsdiscordggdbaqznzimg-srchttpsdiscordappcomapiguilds266961601784053781embedpng-altdiscorda-img-srchttpsimgshieldsiogithublast-commit2chevskiidiscord-bot-helpersstyleflat-alt-hr-div" style="color: inherit; text-decoration: none;">
-					<h2><div style="text-align:center; font-style:bold; color:aqua">HELPER MODULES <hr> <a href="https://www.npmjs.com/package/helper-modules"><img src="https://img.shields.io/npm/v/helper-modules" alt="npmjs"></a> <a href="https://www.tldrlegal.com/l/mit"><img src="https://img.shields.io/github/license/2chevskii/discord-bot-helpers" alt="license"></a> <a href="https://discord.gg/DBaqZNZ"><img src="https://discordapp.com/api/guilds/266961601784053781/embed.png" alt="discord"></a> <img src="https://img.shields.io/github/last-commit/2chevskii/discord-bot-helpers?style=flat" alt=""> <hr> </div></h2>
-				</a>
+				<p><img src="logo.png" alt=""></p>
+				<p><a href="https://www.npmjs.com/package/helper-modules"><img src="https://img.shields.io/npm/v/helper-modules" alt="npmjs"></a> <a href="https://www.tldrlegal.com/l/mit"><img src="https://img.shields.io/github/license/2chevskii/discord-bot-helpers" alt="license"></a> <a href="https://github.com/2chevskii/helper-modules"><img src="https://img.shields.io/github/last-commit/2chevskii/discord-bot-helpers?style=flat" alt="github"></a> <a href="https://www.codacy.com/manual/2chevskii/helper-modules?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=2chevskii/helper-modules&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/32c8a11241b646e6bc5ecd2803853e51" alt="Codacy Badge"></a> <a href="https://discord.gg/DBaqZNZ"><img src="https://discordapp.com/api/guilds/266961601784053781/embed.png" alt="discord"></a></p>
 				<blockquote>
 					<p>Library for handling various things like commands, localization, logging etc.</p>
 				</blockquote>
+				<a href="#contents" id="contents" style="color: inherit; text-decoration: none;">
+					<h2>Contents</h2>
+				</a>
+				<ul>
+					<li><a href="#contents">Contents</a></li>
+					<li><a href="#installation">Installation</a></li>
+					<li><a href="#features">Features</a></li>
+					<li><a href="#documentation">Documentation</a></li>
+					<li><a href="#roadmap">Roadmap</a></li>
+					<li><a href="#credits">Credits</a></li>
+					<li><a href="#links">Links</a></li>
+				</ul>
 				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 					<h2>Installation</h2>
 				</a>
 				<ul>
-					<li>To install the package simply run:<br><ul>
-							<li><code>npm i helper-modules</code><br></li>
+					<li>To install the package simply run:<ul>
+							<li><code>npm i helper-modules</code></li>
 						</ul>
 					</li>
-					<li>If you are installing from the repo, you&#39;d probably need to install dependencies:<br><ul>
-							<li><code>npm i</code><br></li>
+					<li>If you are installing from the repo, you&#39;d probably need to install dependencies:<ul>
+							<li><code>npm i</code></li>
 						</ul>
 					</li>
-					<li>To build module files, use build script:<br><ul>
+					<li>To build module files, use build script:<ul>
 							<li><code>npm run build</code></li>
 						</ul>
 					</li>
@@ -91,9 +102,10 @@
 					<h2>Features</h2>
 				</a>
 				<ul>
-					<li><input checked="" disabled="" type="checkbox"> Easy logging actions with <code>Log</code> module</li>
-					<li><input checked="" disabled="" type="checkbox"> Easy localizing bot on different servers with <code>Lang</code> module</li>
-					<li><input checked="" disabled="" type="checkbox"> Easy processing commands with <code>Command</code> module</li>
+					<li><input checked="" disabled="" type="checkbox"> Logging actions and info with <code>Log</code> module</li>
+					<li><input checked="" disabled="" type="checkbox"> Bot localization on different servers with <code>Lang</code> module</li>
+					<li><input checked="" disabled="" type="checkbox"> Bot command handling with <code>Command</code> module</li>
+					<li><input disabled="" type="checkbox"> Generating flexible config file with <code>Config</code> module</li>
 				</ul>
 				<blockquote>
 					<p>Some of the library features use asynchronous functions, be sure to handle them properly with <code>then()/catch()</code> or <code>async/await</code></p>
@@ -104,6 +116,176 @@
 				<blockquote>
 					<p>Latest buildable version of package will always be located in &#39;develop&#39; branch, &#39;master&#39; is for stable and fully tested versions</p>
 				</blockquote>
+				<a href="#documentation-and-examples" id="documentation-and-examples" style="color: inherit; text-decoration: none;">
+					<h2>Documentation and examples</h2>
+				</a>
+				<p>Autogenerated documentation for this project is <a href="https://2chevskii.github.io/helper-modules/">located here</a></p>
+				<p>This reference is WIP and may not contain all and latest information all the time</p>
+				<a href="#importing-module-features" id="importing-module-features" style="color: inherit; text-decoration: none;">
+					<h3>Importing module features</h3>
+				</a>
+				<blockquote>
+					<p>TypeScript</p>
+				</blockquote>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> helpers <span class="hljs-keyword">from</span> <span class="hljs-string">'helper-modules'</span></code></pre>
+				<blockquote>
+					<p>JavaScript (ES6 modules)</p>
+				</blockquote>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> helpers <span class="hljs-keyword">from</span> <span class="hljs-string">'helper-modules'</span></code></pre>
+				<blockquote>
+					<p>JavaScript (CommonJS)</p>
+				</blockquote>
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> helpers = <span class="hljs-built_in">require</span>(<span class="hljs-string">'helper-modules'</span>)</code></pre>
+				<a href="#log-handling" id="log-handling" style="color: inherit; text-decoration: none;">
+					<h3>Log handling</h3>
+				</a>
+				<p><code>Log</code> module (namespace) is used for logging errors, warnings and any other additional information on demand. </p>
+				<blockquote>
+					<p><a href="https://2chevskii.github.io/helper-modules/modules/_log_module_.html">Module definitions</a></p>
+				</blockquote>
+				<a href="#writing-log-messages" id="writing-log-messages" style="color: inherit; text-decoration: none;">
+					<h4>Writing log messages</h4>
+				</a>
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> log = helpers.Log
+
+log.log(<span class="hljs-string">'This is a simple log message'</span>)
+log.logError(<span class="hljs-string">'This message will appear red in console and will have [ERROR] prefix in the log file'</span>)
+log.logWarning(<span class="hljs-string">'Yellow message with [WARNING] prefix'</span>)
+
+log.logToFile(<span class="hljs-string">'Something important that you want to log into separate file'</span>, <span class="hljs-string">'./path-to-the-file'</span>)
+.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> log.log(<span class="hljs-string">'This will not appear in the log file'</span>, <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>, <span class="hljs-literal">false</span>))
+.catch(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> log.logError(<span class="hljs-string">'And this will not appear in the console, neither will have a timestamp'</span>, <span class="hljs-literal">false</span>, <span class="hljs-literal">false</span>))</code></pre>
+				<a href="#getting-last-log-messages" id="getting-last-log-messages" style="color: inherit; text-decoration: none;">
+					<h4>Getting last log messages</h4>
+				</a>
+				<pre><code class="language-js"><span class="hljs-keyword">var</span> lastlog = log.showLastLog(<span class="hljs-number">10</span>) <span class="hljs-comment">// will return maximum of 10 log messages</span>
+<span class="hljs-keyword">var</span> lastlogmessage = <span class="hljs-string">`<span class="hljs-subst">${lastlog[<span class="hljs-number">0</span>].time.toString()}</span> : <span class="hljs-subst">${lastlog[<span class="hljs-number">0</span>].type}</span> : <span class="hljs-subst">${lastlog[<span class="hljs-number">0</span>].message}</span>`</span></code></pre>
+				<a href="#setting-new-prefix-for-the-log-file" id="setting-new-prefix-for-the-log-file" style="color: inherit; text-decoration: none;">
+					<h4>Setting new prefix for the log file</h4>
+				</a>
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> reserved = log.Utility.reservedCharacters <span class="hljs-comment">// these chars cannot be located in the logfile prefix</span>
+log.setPrefix(<span class="hljs-string">'newprefix'</span>) <span class="hljs-comment">// now the default log file will be named as 'newprefix_day_month_year.log'</span></code></pre>
+				<a href="#getting-current-time" id="getting-current-time" style="color: inherit; text-decoration: none;">
+					<h4>Getting current time</h4>
+				</a>
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> currentTime = <span class="hljs-keyword">new</span> log.Utility.TimeStamp()
+<span class="hljs-keyword">var</span> currentTimeString = currentTime.toString() <span class="hljs-comment">// returns '[hour:minute:second]'</span>
+currentTimeString = log.Utility.TimeStamp.toString(currentTime) <span class="hljs-comment">// same result, but through static method</span></code></pre>
+				<a href="#localizing-messages-of-your-bot" id="localizing-messages-of-your-bot" style="color: inherit; text-decoration: none;">
+					<h3>Localizing messages of your bot</h3>
+				</a>
+				<p><code>Lang</code> module provides features for automatic handling of message localization based on user or server id.</p>
+				<a href="#registering-localization-dictionaries" id="registering-localization-dictionaries" style="color: inherit; text-decoration: none;">
+					<h4>Registering localization dictionaries</h4>
+				</a>
+				<p>Before accessing language messages you obviously need to add language data.</p>
+				<pre><code class="language-js">lang.registerLanguage([
+    [<span class="hljs-string">'Hello'</span>, <span class="hljs-string">'world'</span>],
+    [<span class="hljs-string">'Goodbye'</span>, <span class="hljs-string">'my darling'</span>],
+    [<span class="hljs-string">'Yet another example message key'</span>, <span class="hljs-string">'Yet another example message value'</span>]
+], <span class="hljs-string">'en'</span>) <span class="hljs-comment">// will add english localization and create new language file in the ./helper-modules/locales folder. 'en' localization is default and can be omitted</span>
+
+lang.registerLanguage([
+    [<span class="hljs-string">'Hello'</span>, <span class="hljs-string">'世界'</span>],
+    [<span class="hljs-string">'Goodbye'</span>, <span class="hljs-string">'愛しいあなた'</span>],
+    [<span class="hljs-string">'Yet another example message key'</span>, <span class="hljs-string">'さらに別のメッセージ値の例'</span>]
+], <span class="hljs-string">'jp'</span>) <span class="hljs-comment">// adds japanese localization</span></code></pre>
+				<ul>
+					<li><em>You do not need to check if localization exists already, if it does - module will be checked for unexisting keys and add them if necessary</em></li>
+					<li>Once new internal class in the module is created (usually when module function is executed in the first time), folder <code>./helper-modules/locales</code> will be checked for files matching <code>lang_&lt;some localization literal&gt;.json&gt;</code>. They automatically will be considered message dictionaries. To add new localization bot hoster does not need to change the code, just add such a file with proper structure.</li>
+				</ul>
+				<a href="#setting-language-preferences-for-precific-userid" id="setting-language-preferences-for-precific-userid" style="color: inherit; text-decoration: none;">
+					<h4>Setting language preferences for precific userid</h4>
+				</a>
+				<pre><code class="language-js">lang.setLanguage(<span class="hljs-string">'1234567'</span>, <span class="hljs-string">'jp'</span>)</code></pre>
+				<a href="#getting-localized-messages" id="getting-localized-messages" style="color: inherit; text-decoration: none;">
+					<h4>Getting localized messages</h4>
+				</a>
+				<pre><code class="language-js">lang.getMessage(<span class="hljs-string">'1234'</span>, <span class="hljs-string">'Hello'</span>) <span class="hljs-comment">// returns 'world'</span>
+lang.getMessage(<span class="hljs-string">'1234567'</span>, <span class="hljs-string">'Hello'</span>) <span class="hljs-comment">//returns '世界'</span>
+
+lang.getMessage(<span class="hljs-string">'1234'</span>, <span class="hljs-string">'unexisting key'</span>) <span class="hljs-comment">//returns 'unexisting key', because this message does not exist</span></code></pre>
+				<a href="#handling-commands" id="handling-commands" style="color: inherit; text-decoration: none;">
+					<h3>Handling commands</h3>
+				</a>
+				<p><code>Command</code> module is meant to help you handle commands entered through console or discord messages</p>
+				<p><em>Every call to onConsoleMessage or onDiscordMessage (or to universal onMessage functions which is union for previously listed methods) returns CommandResolveResult object which contains following properties:</em></p>
+				<pre><code class="language-ts"><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> CommandResolveResult&lt;T <span class="hljs-keyword">extends</span> <span class="hljs-built_in">string</span> | Message&gt; {
+<span class="hljs-keyword">public</span> readonly args: <span class="hljs-literal">undefined</span> | <span class="hljs-built_in">string</span>[] <span class="hljs-comment">// undefined only when message is not a command, otherwise string[] with lenght &gt;= 0</span>
+<span class="hljs-keyword">public</span> readonly argsCount: <span class="hljs-built_in">number</span> <span class="hljs-comment">// &gt;= 0</span>
+<span class="hljs-keyword">public</span> readonly calledIn: CommandType <span class="hljs-comment">// Console/server/DM</span>
+<span class="hljs-keyword">public</span> readonly cmd: <span class="hljs-literal">undefined</span> | <span class="hljs-built_in">string</span> <span class="hljs-comment">//first part of the command, separated from prefix if it exists</span>
+<span class="hljs-keyword">public</span> readonly executeResult: <span class="hljs-built_in">any</span> <span class="hljs-comment">// callback function returns</span>
+<span class="hljs-keyword">public</span> readonly isCommand: <span class="hljs-built_in">boolean</span> <span class="hljs-comment">// does message start with a prefix (if it's a discord message, not console command which is always considered command)</span>
+<span class="hljs-keyword">public</span> readonly message: T <span class="hljs-comment">// full message</span>
+<span class="hljs-keyword">public</span> readonly nativeType: <span class="hljs-literal">undefined</span> | CommandType <span class="hljs-comment">// type command was registered of</span>
+<span class="hljs-keyword">public</span> readonly wasExecuted: <span class="hljs-built_in">boolean</span> <span class="hljs-comment">// was callback executed or not</span>
+<span class="hljs-keyword">public</span> readonly callback: <span class="hljs-literal">undefined</span> | <span class="hljs-function">(<span class="hljs-params">(<span class="hljs-params">...args: <span class="hljs-built_in">any</span>[]</span>) =&gt; <span class="hljs-built_in">any</span></span>) // <span class="hljs-params">callback</span> <span class="hljs-params">function</span> <span class="hljs-params">if</span> <span class="hljs-params">it</span> <span class="hljs-params">exists</span></span></code></pre>
+				<a href="#registering-commands" id="registering-commands" style="color: inherit; text-decoration: none;">
+					<h4>Registering commands</h4>
+				</a>
+				<p><em>There are few method signatures for callbacks which needs to be observed:</em></p>
+				<ul>
+					<li>Console command callback:<ul>
+							<li><code>(string[]) =&gt; any</code></li>
+							<li><code>() =&gt; any</code></li>
+						</ul>
+					</li>
+					<li>Discord command callback:<ul>
+							<li><code>(Discord.Message, string[]) =&gt; any</code></li>
+							<li><code>(Discord.Message) =&gt; any)</code></li>
+							<li><code>() =&gt; any</code></li>
+						</ul>
+					</li>
+				</ul>
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> cmd = helpers.Command
+<span class="hljs-keyword">const</span> commandtype = helpers.Command.Utility.CommandType
+
+cmd.registerCommand(<span class="hljs-string">'simple'</span>, commandtype.console, simpleCallback)
+cmd.registerCommand(<span class="hljs-string">'simple'</span>, commandtype.shared, simpleCallback)
+
+cmd.registerCommand(<span class="hljs-string">'cnsl'</span>, commandtype.console, consoleCommandCallback)
+
+cmd.registerCommand(<span class="hljs-string">'dscrd'</span>, commandtype.server, discordCommandCallback)
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">simpleCallback</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'This is simple callback with no arguments, it could be executed from anywhere'</span>)
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">consoleCommandCallback</span>(<span class="hljs-params">args</span>) </span>{
+    <span class="hljs-keyword">if</span> (args.lenght &gt; <span class="hljs-number">0</span>)  { <span class="hljs-comment">// all parameters passed into callbacks are never undefined (if callback follows given signature ofcourse)</span>
+        <span class="hljs-built_in">console</span>.log(args.toString())
+    }
+    <span class="hljs-keyword">else</span>{
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'no arguments passed =('</span>)
+    }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">discordCommandCallback</span>(<span class="hljs-params">message, args</span>) </span>{
+    <span class="hljs-keyword">if</span> (message.author.id === <span class="hljs-string">'1234'</span>) {
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'1234 said: '</span>+ message.content)
+    }
+    <span class="hljs-built_in">console</span>.log(args)
+}</code></pre>
+				<a href="#nodejs-console-commands" id="nodejs-console-commands" style="color: inherit; text-decoration: none;">
+					<h4>NodeJS console commands</h4>
+				</a>
+				<pre><code class="language-js">process.stdin.setEncoding(<span class="hljs-string">'utf-8'</span>)
+
+process.stdin.on(<span class="hljs-string">'data'</span>, data =&gt; cmd.onConsoleMessage(data)
+.then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
+    <span class="hljs-keyword">if</span> (result.wasExecuted) {
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">JSON</span>.stringify(result.executeResult, <span class="hljs-literal">null</span>, <span class="hljs-string">'\t'</span>))
+    }
+})
+.catch(<span class="hljs-function"><span class="hljs-params">ex</span> =&gt;</span> <span class="hljs-built_in">console</span>.error(ex)))</code></pre>
+				<a href="#discord-commands" id="discord-commands" style="color: inherit; text-decoration: none;">
+					<h4>Discord commands</h4>
+				</a>
+				<pre><code class="language-js">client.on(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">async</span> (message) =&gt; {
+    <span class="hljs-keyword">var</span> result = <span class="hljs-keyword">await</span> cmd.onDiscordMessage(message)
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">JSON</span>.stringify(result))
+})</code></pre>
 				<a href="#roadmap" id="roadmap" style="color: inherit; text-decoration: none;">
 					<h2>Roadmap</h2>
 				</a>
@@ -114,6 +296,7 @@
 					<li><input checked="" disabled="" type="checkbox"> Migrating to async filesystem operations and async API methods for command handling</li>
 					<li><input checked="" disabled="" type="checkbox"> Improving language handler with new helper methods, such as getting available localizations, validating localization object, appending new entries to the localization file without overwriting it</li>
 					<li><input disabled="" type="checkbox"> Advanced command parsing with single quotation marks and arrays (not sure if needed)</li>
+					<li><input disabled="" type="checkbox"> Configuration module</li>
 					<li><input disabled="" type="checkbox"> <del>Auto permission handling</del> (refused) </li>
 				</ul>
 				<a href="#credits" id="credits" style="color: inherit; text-decoration: none;">
@@ -131,7 +314,12 @@
 					<li><a href="https://www.npmjs.com/package/helper-modules">NPMJS</a></li>
 					<li><a href="https://discord.gg/DBaqZNZ">Discord</a></li>
 					<li><a href="https://www.tldrlegal.com/l/mit">MIT LICENSE</a></li>
+					<li><a href="https://2chevskii.github.io/helper-modules/">Documentation</a></li>
 				</ul>
+				<a href="#community" id="community" style="color: inherit; text-decoration: none;">
+					<h2>Community</h2>
+				</a>
+				<p><img src="https://discordapp.com/api/guilds/266961601784053781/embed.png?style=banner3" alt=""></p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
