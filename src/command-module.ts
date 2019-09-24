@@ -211,6 +211,31 @@ export namespace Command {
         return CommandInternal.Instance.isCommandDisabled(id, name)
     }
 
+
+    /**
+     * Get current prefix on server or in DM
+     *
+     * @export
+     * @param {string} id server/user id
+     * @returns {string} current prefix
+     */
+    export function getPrefix(id:string):string{
+        return CommandInternal.Instance.getPrefix(id)
+    }
+
+
+    /**
+     * Set new prefix for server or specific user
+     *
+     * @export
+     * @param {string} id server/user id
+     * @param {string} prefix new prefix
+     * @returns {boolean} whether prefix was set or not (if it is unappropriate)
+     */
+    export function setPrefix(id:string, prefix:string){
+        return CommandInternal.Instance.setPrefix(id,prefix)
+    }
+
     class CommandInternal {
         private static _instance: CommandInternal
         private data: Data[]
@@ -241,6 +266,9 @@ export namespace Command {
                         var exactCommand = this.findCommands(cmd, ct) as DiscordCommand
                         if (exactCommand == undefined) {
                             resolve(new Command.Utility.CommandResolveResult(true, message, ct, false, cmd, args, commands[0].type, commands[0].callback))
+                        }
+                        else if(this.isCommandDisabled(ct === Utility.CommandType.DM ? message.author.id : message.guild.id, cmd)){
+                            resolve(new Command.Utility.CommandResolveResult(true, message, ct, false,cmd,args,exactCommand.type, exactCommand.callback))
                         }
                         else if (execute) {
                             exactCommand.executeCallback(message, args)
