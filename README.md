@@ -109,6 +109,8 @@ currentTimeString = log.Utility.TimeStamp.toString(currentTime) // same result, 
 
 `Lang` module provides features for automatic handling of message localization based on user or server id.
 
+> [Module definitions](https://2chevskii.github.io/helper-modules/modules/_lang_module_.html)
+
 #### Registering localization dictionaries
 
 Before accessing language messages you obviously need to add language data.
@@ -148,6 +150,8 @@ lang.getMessage('1234', 'unexisting key') //returns 'unexisting key', because th
 ### Handling commands
 
 `Command` module is meant to help you handle commands entered through console or discord messages
+
+> [Module definitions](https://2chevskii.github.io/helper-modules/modules/_command_module_.html)
 
 *Every call to onConsoleMessage or onDiscordMessage (or to universal onMessage functions which is union for previously listed methods) returns CommandResolveResult object which contains following properties:*
 
