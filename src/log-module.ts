@@ -176,8 +176,8 @@ export namespace Log {
         }
 
         private logColored(data: any, type: LogType, timestamp: boolean, toConsole: boolean, toFile: boolean): LogMessage {
-            var ts = timestamp ? new Log.Utility.TimeStamp() : undefined
-            var string: string | undefined = data === undefined ? undefined : data.toString()
+            const ts = timestamp ? new Log.Utility.TimeStamp() : undefined
+            const string: string | undefined = data === undefined ? undefined : data.toString()
             var message: LogMessage = {
                 message: string,
                 time: ts,
@@ -232,7 +232,7 @@ export namespace Log {
         }
 
         private get logFileName(): string {
-            var ts = new Log.Utility.TimeStamp()
+            const ts = new Log.Utility.TimeStamp()
             return path.join(logFolder, this.file + '_' + ts.day + '_' + ts.month + '_' + ts.year + '.log')
         }
 
@@ -350,7 +350,7 @@ export namespace Log.Utility {
          * @memberof Log.Utility.TimeStamp
          */
         public static toString(timestamp: TimeStamp): string {
-            var string = '[' + timestamp.hour + ':' + timestamp.minute + ':' + timestamp.second + ']'
+            const string = '[' + timestamp.hour + ':' + timestamp.minute + ':' + timestamp.second + ']'
             return string
         }
     }

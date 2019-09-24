@@ -250,7 +250,7 @@ export namespace Command {
         public async onDiscordMessage(message: Message, execute: boolean): Promise<Command.Utility.CommandResolveResult<Message>> {
             return new Promise(resolve => {
                 var cmd = this.parseCommand(message)
-                var ct = message.guild == undefined ? Command.Utility.CommandType.DM : Command.Utility.CommandType.server
+                const ct = message.guild == undefined ? Command.Utility.CommandType.DM : Command.Utility.CommandType.server
                 if (cmd === undefined) {
                     resolve(new Command.Utility.CommandResolveResult(false, message, ct, false))
                 }
@@ -318,7 +318,7 @@ export namespace Command {
 
         private parseCommand(command: string | Message): string | undefined {
             if (typeof command === 'string') {
-                let cmd = command.split(' ')[0].trim().toLowerCase()
+                const cmd = command.split(' ')[0].trim().toLowerCase()
                 if (cmd.length < 1) {
                     return undefined
                 }
@@ -345,11 +345,11 @@ export namespace Command {
         }
 
         private parseArguments(msg: string) {
-            var args = new Array<string>(0);
+            const args = new Array<string>(0);
             let index = msg.indexOf(' ')
             msg = msg.substr(index).trim();
 
-            if (index == -1 || msg.length < 1) {
+            if (index === -1 || msg.length < 1) {
                 return args;
             }
 
@@ -362,7 +362,7 @@ export namespace Command {
                         flag = true;
                     }
                     else {
-                        let t = current.trim();
+                        const t = current.trim();
                         if (t != null && t.length > 0) {
                             args.push(t);
                         }
@@ -371,7 +371,7 @@ export namespace Command {
                     }
                 }
                 else if (char.match(/\s+/g) && !flag) {
-                    let t = current.trim();
+                    const t = current.trim();
                     if (t != null && t.length > 0) {
                         args.push(t);
                     }
@@ -382,7 +382,7 @@ export namespace Command {
                     current += char;
                 }
             }
-            let t = current.trim();
+            const t = current.trim();
             if (t != null && t.length > 0) {
                 args.push(t);
             }
@@ -396,7 +396,7 @@ export namespace Command {
         }
 
         public setPrefix(id: string, prefix: string): boolean {
-            let res = this.getData(id).setPrefix(prefix);
+            const res = this.getData(id).setPrefix(prefix);
             if (res) {
                 fs.mkdirSync(path.dirname(commanddatafile), { recursive: true })
                 fs.writeFileSync(commanddatafile, JSON.stringify(this.data))
