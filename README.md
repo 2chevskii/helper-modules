@@ -129,10 +129,10 @@ lang.registerLanguage([
 ], 'jp') // adds japanese localization
 ```
 
-* *You do not need to check if localization exists already, if it does - module will be checked for unexisting keys and add them if necessary*
-* Once new internal class in the module is created (usually when module function is executed in the first time), folder `./helper-modules/locales` will be checked for files matching `lang_<some localization literal>.json>`. They automatically will be considered message dictionaries. To add new localization bot hoster does not need to change the code, just add such a file with proper structure.
+* *You do not need to check if localization exists already, if it does - module will check it for unexisting keys and add them if necessary*
+* Once new internal class in the module is created (usually when module function is executed in the first time), folder `./helper-modules/locales` will be checked for files matching `lang_<some localization literal>.json>`. They automatically will be considered message dictionaries. To add new localization bot hoster does not need to change the code, just add such file with proper structure.
 
-#### Setting language preferences for precific userid
+#### Setting language preferences for specific user/guild id
 
 ```js
 lang.setLanguage('1234567', 'jp')
