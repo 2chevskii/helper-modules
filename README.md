@@ -153,7 +153,7 @@ lang.getMessage('1234', 'unexisting key') //returns 'unexisting key', because th
 
 > [Module definitions](https://2chevskii.github.io/helper-modules/modules/_command_module_.html)
 
-*Every call to onConsoleMessage or onDiscordMessage (or to universal onMessage functions which is union for previously listed methods) returns CommandResolveResult object which contains following properties:*
+*Every call to [onConsoleMessage](https://2chevskii.github.io/helper-modules/modules/_command_module_.command.html#onconsolemessage) or [onDiscordMessage](https://2chevskii.github.io/helper-modules/modules/_command_module_.command.html#ondiscordmessage) (or to universal [onMessage](https://2chevskii.github.io/helper-modules/modules/_command_module_.command.html#onmessage) function which is union for previously listed methods) returns [CommandResolveResult](https://2chevskii.github.io/helper-modules/classes/_command_module_.command.utility.commandresolveresult.html) object which contains following properties:*
 
 ```ts
 export class CommandResolveResult<T extends string | Message> {
@@ -249,7 +249,7 @@ client.on('message', async (message) => {
 
 ## Credits
 
-* General idea and structure (partially) of this library was inspired by Oxide/uMod modding platform, code from `Oxide.Core.dll` licensed under the [MIT license][license]
+* General idea and structure (partially) of this library was inspired by [Oxide/uMod](https://umod.org/) modding platform, code from `Oxide.Core.dll` licensed under the [MIT license][license]
 * All dependencies belong to their developer teams, and keep original licenses
 
 ## Links
