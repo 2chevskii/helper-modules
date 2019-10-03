@@ -3,8 +3,6 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { Log } from './log-module'
 
-// DISABLED COMMANDS ARE NOT HANDLED
-
 /**
  * Contains definitions for handling commands.
  * @namespace Command
