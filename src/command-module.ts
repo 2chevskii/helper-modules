@@ -217,7 +217,7 @@ export namespace Command {
      * @param {string} id server/user id
      * @returns {string} current prefix
      */
-    export function getPrefix(id:string):string{
+    export function getPrefix(id: string): string {
         return CommandInternal.Instance.getPrefix(id)
     }
 
@@ -230,8 +230,8 @@ export namespace Command {
      * @param {string} prefix new prefix
      * @returns {boolean} whether prefix was set or not (if it is unappropriate)
      */
-    export function setPrefix(id:string, prefix:string){
-        return CommandInternal.Instance.setPrefix(id,prefix)
+    export function setPrefix(id: string, prefix: string) {
+        return CommandInternal.Instance.setPrefix(id, prefix)
     }
 
     class CommandInternal {
@@ -265,8 +265,8 @@ export namespace Command {
                         if (exactCommand == undefined) {
                             resolve(new Command.Utility.CommandResolveResult(true, message, ct, false, cmd, args, commands[0].type, commands[0].callback))
                         }
-                        else if(this.isCommandDisabled(ct === Utility.CommandType.DM ? message.author.id : message.guild.id, cmd)){
-                            resolve(new Command.Utility.CommandResolveResult(true, message, ct, false,cmd,args,exactCommand.type, exactCommand.callback))
+                        else if (this.isCommandDisabled(ct === Utility.CommandType.DM ? message.author.id : message.guild.id, cmd)) {
+                            resolve(new Command.Utility.CommandResolveResult(true, message, ct, false, cmd, args, exactCommand.type, exactCommand.callback))
                         }
                         else if (execute) {
                             exactCommand.executeCallback(message, args)
@@ -555,6 +555,8 @@ export namespace Command {
                 if (this.data == undefined) {
                     throw 'Data was not loaded correctly, it will be reset'
                 }
+
+
             } catch (ex) {
                 Log.logError(ex)
                 fs.unlinkSync(commanddatafile)
@@ -579,6 +581,37 @@ export namespace Command {
             this.id = id
             this.prefix = defaultprefix
             this.disabledCommands = new Array<string>()
+
+            this.disableCommand = (cmd: string) => {
+                if (this.isCommandDisabled(cmd)) {
+                    return false;
+                }
+                this.disabledCommands.push(cmd)
+                return true
+            }
+            this.enableCommand = (cmd: string) => {
+                if (!this.isCommandDisabled(cmd)) {
+                    return false;
+                }
+                this.disabledCommands = this.disabledCommands.filter(command => command !== cmd)
+                return true
+            }
+            this.isCommandDisabled = (cmd: string) => {
+                return this.disabledCommands.includes(cmd)
+            }
+            this.getDisabledCommands = () => {
+                return [...this.disabledCommands]
+            }
+            this.getPrefix = () => {
+                return this.prefix
+            }
+            this.setPrefix = (prefix: string) => {
+                if (prefix.length < 1) {
+                    return false;
+                }
+                this.prefix = prefix
+                return true
+            }
         }
 
         public disableCommand(cmd: string): boolean {
