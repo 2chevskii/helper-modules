@@ -109,6 +109,8 @@ currentTimeString = log.Utility.TimeStamp.toString(currentTime) // same result, 
 
 `Lang` module provides features for automatic handling of message localization based on user or server id.
 
+> [Module definitions](https://2chevskii.github.io/helper-modules/modules/_lang_module_.html)
+
 #### Registering localization dictionaries
 
 Before accessing language messages you obviously need to add language data.
@@ -127,10 +129,10 @@ lang.registerLanguage([
 ], 'jp') // adds japanese localization
 ```
 
-* *You do not need to check if localization exists already, if it does - module will be checked for unexisting keys and add them if necessary*
-* Once new internal class in the module is created (usually when module function is executed in the first time), folder `./helper-modules/locales` will be checked for files matching `lang_<some localization literal>.json>`. They automatically will be considered message dictionaries. To add new localization bot hoster does not need to change the code, just add such a file with proper structure.
+* *You do not need to check if localization exists already, if it does - module will check it for unexisting keys and add them if necessary*
+* Once new internal class in the module is created (usually when module function is executed in the first time), folder `./helper-modules/locales` will be checked for files matching `lang_<some localization literal>.json>`. They automatically will be considered message dictionaries. To add new localization bot hoster does not need to change the code, just add such file with proper structure.
 
-#### Setting language preferences for precific userid
+#### Setting language preferences for specific user/guild id
 
 ```js
 lang.setLanguage('1234567', 'jp')
@@ -149,7 +151,9 @@ lang.getMessage('1234', 'unexisting key') //returns 'unexisting key', because th
 
 `Command` module is meant to help you handle commands entered through console or discord messages
 
-*Every call to onConsoleMessage or onDiscordMessage (or to universal onMessage functions which is union for previously listed methods) returns CommandResolveResult object which contains following properties:*
+> [Module definitions](https://2chevskii.github.io/helper-modules/modules/_command_module_.html)
+
+*Every call to [onConsoleMessage](https://2chevskii.github.io/helper-modules/modules/_command_module_.command.html#onconsolemessage) or [onDiscordMessage](https://2chevskii.github.io/helper-modules/modules/_command_module_.command.html#ondiscordmessage) (or to universal [onMessage](https://2chevskii.github.io/helper-modules/modules/_command_module_.command.html#onmessage) function which is union for previously listed methods) returns [CommandResolveResult](https://2chevskii.github.io/helper-modules/classes/_command_module_.command.utility.commandresolveresult.html) object which contains following properties:*
 
 ```ts
 export class CommandResolveResult<T extends string | Message> {
@@ -245,7 +249,7 @@ client.on('message', async (message) => {
 
 ## Credits
 
-* General idea and structure (partially) of this library was inspired by Oxide/uMod modding platform, code from `Oxide.Core.dll` licensed under the [MIT license][license]
+* General idea and structure (partially) of this library was inspired by [Oxide/uMod](https://umod.org/) modding platform, code from `Oxide.Core.dll` licensed under the [MIT license][license]
 * All dependencies belong to their developer teams, and keep original licenses
 
 ## Links
