@@ -555,7 +555,15 @@ export namespace Command {
                 if (this.data == undefined) {
                     throw 'Data was not loaded correctly, it will be reset'
                 }
-
+                let temp = new Data('default')
+                this.data.forEach(d => {
+                    d.disableCommand = temp.disableCommand.bind(d)
+                    d.enableCommand = temp.enableCommand.bind(d)
+                    d.getDisabledCommands = temp.getDisabledCommands.bind(d)
+                    d.getPrefix = temp.getPrefix.bind(d)
+                    d.isCommandDisabled = temp.isCommandDisabled.bind(d)
+                    d.setPrefix = temp.setPrefix.bind(d)
+                })
 
             } catch (ex) {
                 Log.logError(ex)
@@ -581,37 +589,6 @@ export namespace Command {
             this.id = id
             this.prefix = defaultprefix
             this.disabledCommands = new Array<string>()
-
-            this.disableCommand = (cmd: string) => {
-                if (this.isCommandDisabled(cmd)) {
-                    return false;
-                }
-                this.disabledCommands.push(cmd)
-                return true
-            }
-            this.enableCommand = (cmd: string) => {
-                if (!this.isCommandDisabled(cmd)) {
-                    return false;
-                }
-                this.disabledCommands = this.disabledCommands.filter(command => command !== cmd)
-                return true
-            }
-            this.isCommandDisabled = (cmd: string) => {
-                return this.disabledCommands.includes(cmd)
-            }
-            this.getDisabledCommands = () => {
-                return [...this.disabledCommands]
-            }
-            this.getPrefix = () => {
-                return this.prefix
-            }
-            this.setPrefix = (prefix: string) => {
-                if (prefix.length < 1) {
-                    return false;
-                }
-                this.prefix = prefix
-                return true
-            }
         }
 
         public disableCommand(cmd: string): boolean {
