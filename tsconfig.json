@@ -9,7 +9,7 @@
     "outDir": "distr",
     "declarationDir": "distr/typings",
     "strict": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "noImplicitThis": true,
     "esModuleInterop": true,
     "strictFunctionTypes": false,
