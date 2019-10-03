@@ -175,6 +175,9 @@ currentTimeString = log.Utility.TimeStamp.toString(currentTime) <span class="hlj
 					<h3>Localizing messages of your bot</h3>
 				</a>
 				<p><code>Lang</code> module provides features for automatic handling of message localization based on user or server id.</p>
+				<blockquote>
+					<p><a href="https://2chevskii.github.io/helper-modules/modules/_lang_module_.html">Module definitions</a></p>
+				</blockquote>
 				<a href="#registering-localization-dictionaries" id="registering-localization-dictionaries" style="color: inherit; text-decoration: none;">
 					<h4>Registering localization dictionaries</h4>
 				</a>
@@ -191,11 +194,11 @@ lang.registerLanguage([
     [<span class="hljs-string">'Yet another example message key'</span>, <span class="hljs-string">'さらに別のメッセージ値の例'</span>]
 ], <span class="hljs-string">'jp'</span>) <span class="hljs-comment">// adds japanese localization</span></code></pre>
 				<ul>
-					<li><em>You do not need to check if localization exists already, if it does - module will be checked for unexisting keys and add them if necessary</em></li>
-					<li>Once new internal class in the module is created (usually when module function is executed in the first time), folder <code>./helper-modules/locales</code> will be checked for files matching <code>lang_&lt;some localization literal&gt;.json&gt;</code>. They automatically will be considered message dictionaries. To add new localization bot hoster does not need to change the code, just add such a file with proper structure.</li>
+					<li><em>You do not need to check if localization exists already, if it does - module will check it for unexisting keys and add them if necessary</em></li>
+					<li>Once new internal class in the module is created (usually when module function is executed in the first time), folder <code>./helper-modules/locales</code> will be checked for files matching <code>lang_&lt;some localization literal&gt;.json&gt;</code>. They automatically will be considered message dictionaries. To add new localization bot hoster does not need to change the code, just add such file with proper structure.</li>
 				</ul>
-				<a href="#setting-language-preferences-for-precific-userid" id="setting-language-preferences-for-precific-userid" style="color: inherit; text-decoration: none;">
-					<h4>Setting language preferences for precific userid</h4>
+				<a href="#setting-language-preferences-for-specific-userguild-id" id="setting-language-preferences-for-specific-userguild-id" style="color: inherit; text-decoration: none;">
+					<h4>Setting language preferences for specific user/guild id</h4>
 				</a>
 				<pre><code class="language-js">lang.setLanguage(<span class="hljs-string">'1234567'</span>, <span class="hljs-string">'jp'</span>)</code></pre>
 				<a href="#getting-localized-messages" id="getting-localized-messages" style="color: inherit; text-decoration: none;">
@@ -209,7 +212,10 @@ lang.getMessage(<span class="hljs-string">'1234'</span>, <span class="hljs-strin
 					<h3>Handling commands</h3>
 				</a>
 				<p><code>Command</code> module is meant to help you handle commands entered through console or discord messages</p>
-				<p><em>Every call to onConsoleMessage or onDiscordMessage (or to universal onMessage functions which is union for previously listed methods) returns CommandResolveResult object which contains following properties:</em></p>
+				<blockquote>
+					<p><a href="https://2chevskii.github.io/helper-modules/modules/_command_module_.html">Module definitions</a></p>
+				</blockquote>
+				<p><em>Every call to <a href="https://2chevskii.github.io/helper-modules/modules/_command_module_.command.html#onconsolemessage">onConsoleMessage</a> or <a href="https://2chevskii.github.io/helper-modules/modules/_command_module_.command.html#ondiscordmessage">onDiscordMessage</a> (or to universal <a href="https://2chevskii.github.io/helper-modules/modules/_command_module_.command.html#onmessage">onMessage</a> function which is union for previously listed methods) returns <a href="https://2chevskii.github.io/helper-modules/classes/_command_module_.command.utility.commandresolveresult.html">CommandResolveResult</a> object which contains following properties:</em></p>
 				<pre><code class="language-ts"><span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> CommandResolveResult&lt;T <span class="hljs-keyword">extends</span> <span class="hljs-built_in">string</span> | Message&gt; {
 <span class="hljs-keyword">public</span> readonly args: <span class="hljs-literal">undefined</span> | <span class="hljs-built_in">string</span>[] <span class="hljs-comment">// undefined only when message is not a command, otherwise string[] with lenght &gt;= 0</span>
 <span class="hljs-keyword">public</span> readonly argsCount: <span class="hljs-built_in">number</span> <span class="hljs-comment">// &gt;= 0</span>
@@ -303,7 +309,7 @@ process.stdin.on(<span class="hljs-string">'data'</span>, data =&gt; cmd.onConso
 					<h2>Credits</h2>
 				</a>
 				<ul>
-					<li>General idea and structure (partially) of this library was inspired by Oxide/uMod modding platform, code from <code>Oxide.Core.dll</code> licensed under the <a href="https://www.tldrlegal.com/l/mit">MIT license</a></li>
+					<li>General idea and structure (partially) of this library was inspired by <a href="https://umod.org/">Oxide/uMod</a> modding platform, code from <code>Oxide.Core.dll</code> licensed under the <a href="https://www.tldrlegal.com/l/mit">MIT license</a></li>
 					<li>All dependencies belong to their developer teams, and keep original licenses</li>
 				</ul>
 				<a href="#links" id="links" style="color: inherit; text-decoration: none;">

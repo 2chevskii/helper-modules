@@ -3,8 +3,6 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { Log } from './log-module'
 
-// DISABLED COMMANDS ARE NOT HANDLED
-
 /**
  * Contains definitions for handling commands.
  * @namespace Command
@@ -219,7 +217,7 @@ export namespace Command {
      * @param {string} id server/user id
      * @returns {string} current prefix
      */
-    export function getPrefix(id:string):string{
+    export function getPrefix(id: string): string {
         return CommandInternal.Instance.getPrefix(id)
     }
 
@@ -232,8 +230,8 @@ export namespace Command {
      * @param {string} prefix new prefix
      * @returns {boolean} whether prefix was set or not (if it is unappropriate)
      */
-    export function setPrefix(id:string, prefix:string){
-        return CommandInternal.Instance.setPrefix(id,prefix)
+    export function setPrefix(id: string, prefix: string) {
+        return CommandInternal.Instance.setPrefix(id, prefix)
     }
 
     class CommandInternal {
@@ -267,8 +265,8 @@ export namespace Command {
                         if (exactCommand == undefined) {
                             resolve(new Command.Utility.CommandResolveResult(true, message, ct, false, cmd, args, commands[0].type, commands[0].callback))
                         }
-                        else if(this.isCommandDisabled(ct === Utility.CommandType.DM ? message.author.id : message.guild.id, cmd)){
-                            resolve(new Command.Utility.CommandResolveResult(true, message, ct, false,cmd,args,exactCommand.type, exactCommand.callback))
+                        else if (this.isCommandDisabled(ct === Utility.CommandType.DM ? message.author.id : message.guild.id, cmd)) {
+                            resolve(new Command.Utility.CommandResolveResult(true, message, ct, false, cmd, args, exactCommand.type, exactCommand.callback))
                         }
                         else if (execute) {
                             exactCommand.executeCallback(message, args)
@@ -557,6 +555,16 @@ export namespace Command {
                 if (this.data == undefined) {
                     throw 'Data was not loaded correctly, it will be reset'
                 }
+                let temp = new Data('default')
+                this.data.forEach(d => {
+                    d.disableCommand = temp.disableCommand.bind(d)
+                    d.enableCommand = temp.enableCommand.bind(d)
+                    d.getDisabledCommands = temp.getDisabledCommands.bind(d)
+                    d.getPrefix = temp.getPrefix.bind(d)
+                    d.isCommandDisabled = temp.isCommandDisabled.bind(d)
+                    d.setPrefix = temp.setPrefix.bind(d)
+                })
+
             } catch (ex) {
                 Log.logError(ex)
                 fs.unlinkSync(commanddatafile)
